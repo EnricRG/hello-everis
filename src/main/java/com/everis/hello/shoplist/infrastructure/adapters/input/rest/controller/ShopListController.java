@@ -1,18 +1,20 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller;
 
 import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.exception.CannotCreateShopListException;
 import com.everis.hello.shoplist.app.exception.MaxShopListsPerUserException;
 import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
+import com.everis.hello.shoplist.app.exception.ShopListEmptyException;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;
+import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author EnricRG
@@ -34,10 +36,11 @@ public class ShopListController {
     @PostMapping(value = "/{listName}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ShopListSimpleView> createShopList(
         @PathVariable("owner") String owner,
-        @PathVariable("listName") String listName
-    ) throws ShopListAlreadyExistsException, MaxShopListsPerUserException
+        @PathVariable("listName") String listName,
+        @RequestBody @Valid ShopListForm form
+    ) throws ShopListAlreadyExistsException, MaxShopListsPerUserException, CannotCreateShopListException, ShopListEmptyException
     {
-        ShopList shopList = this.createUsecase.createShopList(owner, listName);
+        ShopList shopList = this.createUsecase.createShopList(owner, listName, form.products);
         return ResponseEntity.ok(this.shopListMapper.toSimpleView(shopList));
     }
 }

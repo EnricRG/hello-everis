@@ -4,7 +4,11 @@ package com.everis.hello.shoplist.app.domain;
 import com.everis.hello.shoplist.app.exception.ShopListFullException;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,25 +18,30 @@ import java.util.List;
  */
 @Getter
 @ToString
+@Validated
 public class ShopList {
 
     public static final int MAX_ITEMS_PER_LIST = 25;
 
     private final String name;
     private final String owner;
-    private final List<Long> items = new ArrayList<>(); //TODO required to contain at least 1 element at construction
+    private final List<Long> items = new ArrayList<>();
 
-    private boolean inGracePeriod; // Differentiates recently created lists that are empty and must not be deleted.
-
-    public ShopList(String name, String owner) {
+    // Only for delayed construction purposes, should not be used in business logic.
+    public ShopList(@NotNull String name, @NotNull String owner) {
         this.name = name;
         this.owner = owner;
-        this.inGracePeriod = true;
+    }
+
+    public ShopList(@NotNull String name, @NotNull String owner, @NotEmpty @Size(max = MAX_ITEMS_PER_LIST) List<Long> products) {
+        this.name = name;
+        this.owner = owner;
+        this.items.addAll(products);
     }
 
     /** Empty shop lists must be deleted. */
     public boolean needsDeletion() {
-        return !this.inGracePeriod && this.items.isEmpty();
+        return this.items.isEmpty();
     }
 
     public boolean isFull() {
@@ -56,7 +65,6 @@ public class ShopList {
     }
 
     public void addProductNoConstraint(Long productId) {
-        this.inGracePeriod = false;
         this.items.add(productId);
     }
 }
