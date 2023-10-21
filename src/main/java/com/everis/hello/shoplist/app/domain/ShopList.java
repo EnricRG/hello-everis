@@ -9,21 +9,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author EnricRG
+ */
 @Getter
 @ToString
 public class ShopList {
 
-    private static final int MAX_ITEMS_PER_LIST = 25;
+    public static final int MAX_ITEMS_PER_LIST = 25;
 
     private final String name;
-    private final String user;
-    private final List<Long> items = new ArrayList<>();
+    private final String owner;
+    private final List<Long> items = new ArrayList<>(); //TODO required to contain at least 1 element at construction
 
     private boolean inGracePeriod; // Differentiates recently created lists that are empty and must not be deleted.
 
-    public ShopList(String name, String user) {
+    public ShopList(String name, String owner) {
         this.name = name;
-        this.user = user;
+        this.owner = owner;
         this.inGracePeriod = true;
     }
 
@@ -41,11 +44,19 @@ public class ShopList {
         return Collections.unmodifiableList(this.items);
     }
 
-    public void addProduct(Long product) throws ShopListFullException {
+    public int getNumberOfItems() {
+        return this.items.size();
+    }
+
+    public void addProduct(Long productId) throws ShopListFullException {
         if (this.isFull()) {
             throw new ShopListFullException(this.getName());
         }
+        this.addProductNoConstraint(productId);
+    }
+
+    public void addProductNoConstraint(Long productId) {
         this.inGracePeriod = false;
-        this.items.add(product);
+        this.items.add(productId);
     }
 }

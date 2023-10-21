@@ -2,6 +2,8 @@ package com.everis.hello;
 
 /**
  * Base class for this application exceptions. Useful to differentiate from other exceptions.
+ *
+ * @author EnricRG
  */
 public class AppException extends Exception {
     public AppException() {

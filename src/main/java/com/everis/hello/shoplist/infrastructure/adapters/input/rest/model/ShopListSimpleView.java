@@ -11,6 +11,6 @@ import lombok.ToString;
  */
 @AllArgsConstructor
 @ToString
-public class ShopListView {
+public class ShopListSimpleView {
     public String name;
 }

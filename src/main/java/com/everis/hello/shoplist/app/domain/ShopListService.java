@@ -4,15 +4,16 @@ import com.everis.hello.shoplist.app.exception.MaxShopListsPerUserException;
 import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 
+/**
+ * @author EnricRG
+ */
+@Slf4j
 public class ShopListService implements CreateShopListUsecase {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ShopListService.class);
 
     private final ShopListRepository repo;
 
@@ -23,27 +24,27 @@ public class ShopListService implements CreateShopListUsecase {
 
     @Override
     @Transactional
-    public ShopList createShopList(String username, String listName) throws ShopListAlreadyExistsException, MaxShopListsPerUserException {
-        LOG.trace("Creating ShopList '{}' for user '{}'...", listName, username);
-        if (this.repo.existsList(username, listName)) {
-            LOG.error("User '{}' already has a list with name '{}'.", username, listName);
-            throw new ShopListAlreadyExistsException(username, listName);
-        } else if (this.userListLimitReached(username)) {
-            LOG.error("User '{}' has exceeded the limit of shop lists per user!", username);
-            throw new MaxShopListsPerUserException(username);
+    public ShopList createShopList(String owner, String listName) throws ShopListAlreadyExistsException, MaxShopListsPerUserException {
+        log.trace("Creating ShopList '{}' for user '{}'...", listName, owner);
+        if (this.repo.existsList(owner, listName)) {
+            log.error("User '{}' already has a list with name '{}'.", owner, listName);
+            throw new ShopListAlreadyExistsException(owner, listName);
+        } else if (this.userListLimitReached(owner)) {
+            log.error("User '{}' has reached the limit of shop lists per user!", owner);
+            throw new MaxShopListsPerUserException(owner);
         }
 
-        ShopList s = repo.create(newShopList(username, listName));
-        LOG.info("ShopList '{}' successfully created for user '{}'.", listName, username);
-        LOG.debug("ShopList created: {}", s);
+        ShopList s = repo.create(newShopList(owner, listName));
+        log.info("ShopList '{}' successfully created for user '{}'.", listName, owner);
+        log.debug("ShopList created: {}", s);
         return s;
     }
 
-    private ShopList newShopList(String username, String listName) {
-        return new ShopList(username, listName);
+    private ShopList newShopList(String owner, String listName) {
+        return new ShopList(owner, listName);
     }
 
-    private boolean userListLimitReached(String username) {
-        return this.repo.userListQuantity(username) >= CreateShopListUsecase.MAX_LISTS_PER_USER;
+    private boolean userListLimitReached(String owner) {
+        return this.repo.userListQuantity(owner) >= CreateShopListUsecase.MAX_LISTS_PER_USER;
     }
 }
