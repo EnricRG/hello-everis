@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +41,7 @@ class CreateShopListIntegrationTest {
     }
 
     @Test
+    @Transactional
     void createShopList_shouldReturnOk() throws AppException {
         String user = "user1";
         String listName = "list1";
@@ -55,5 +57,17 @@ class CreateShopListIntegrationTest {
         assertEquals(listName, response.getBody().name);
 
         assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+    }
+
+    @Test
+    @Transactional
+    void create6thShopListForUser_shouldThrowException() throws AppException {
+        String user = "userWith5Lists";
+        String listName = "list6";
+        List<Long> products = List.of(1L,2L);
+
+        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+
+        assertThrows(MaxShopListsPerUserException.class, () -> controller.createShopList(user, listName, new ShopListForm(products)));
     }
 }
