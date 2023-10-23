@@ -32,7 +32,8 @@ public class ShopListItem {
     @Column(name = "product_id", nullable = false)
     private Long productId;
 
-    public ShopListItem(Long productId) {
+    public ShopListItem(ShopListEntity shopList, Long productId) {
+        this.shopList = shopList;
         this.productId = productId;
     }
 

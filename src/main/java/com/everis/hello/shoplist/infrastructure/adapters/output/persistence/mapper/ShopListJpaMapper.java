@@ -39,7 +39,7 @@ public class ShopListJpaMapper {
 
         List<ShopListItem> dbItems = new ArrayList<>();
         for (Long productId : shopList.getItems()) {
-            dbItems.add(new ShopListItem(productId));
+            dbItems.add(new ShopListItem(dbModel, productId));
         }
         dbModel.setItems(dbItems);
 

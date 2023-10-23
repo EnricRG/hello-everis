@@ -33,8 +33,7 @@ public class ShopListEntity {
     @Column(name = "owner", nullable = false)
     private String owner;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="shopList_id", nullable=false)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ShopListItem> items;
 
     @Override

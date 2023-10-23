@@ -45,6 +45,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.dkanejs.maven.plugins</groupId>
 			<artifactId>docker-compose-maven-plugin</artifactId>
 			<version>4.0.0</version>

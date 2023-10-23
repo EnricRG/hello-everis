@@ -30,14 +30,14 @@ public class ShopListService implements CreateShopListUsecase {
 
     @Override
     @Transactional
-    public ShopList createShopList(@NotNull String owner, @NotNull String listName, List<Long> products)
+    public ShopList createShopList(String owner, String listName, List<Long> products)
         throws ShopListAlreadyExistsException, MaxShopListsPerUserException, CannotCreateShopListException, ShopListEmptyException
     {
         log.trace("Creating ShopList '{}' for user '{}'...", listName, owner);
 
         this.validateForCreation(owner,listName,products);
 
-        ShopList s = repo.create(newShopList(owner, listName, products));
+        ShopList s = repo.create(newShopList(listName, owner, products));
         log.info("ShopList '{}' successfully created for user '{}'.", listName, owner);
         log.debug("ShopList created: {}", s);
         return s;
@@ -62,8 +62,8 @@ public class ShopListService implements CreateShopListUsecase {
         }
     }
 
-    private ShopList newShopList(String owner, String listName, List<Long> products) {
-        return new ShopList(owner, listName, products);
+    private ShopList newShopList(String listName, String owner, List<Long> products) {
+        return new ShopList(listName, owner, products);
     }
 
     private boolean userListLimitReached(String owner) {
