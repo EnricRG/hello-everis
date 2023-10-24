@@ -54,11 +54,12 @@ public class ShopListService implements CreateShopListUsecase {
             log.error("User '{}' has reached the limit of shop lists per user!", owner);
             throw new MaxShopListsPerUserException(owner);
         } else if (products.isEmpty()) {
+            log.error("Cannot create shop list '{}' for user '{}' with no products", listName, owner);
             throw new ShopListEmptyException(owner);
-        } else if (products.size() >= ShopList.MAX_ITEMS_PER_LIST) {
+        } else if (products.size() > ShopList.MAX_ITEMS_PER_LIST) {
             log.error("Cannot create a shop list for user '{}' with {} products because it exceeds the limit of " +
                 "{} products per list", owner, products.size(), ShopList.MAX_ITEMS_PER_LIST);
-            throw new CannotCreateShopListException(owner, "product number exceeded.");
+            throw new CannotCreateShopListException(owner, "max product number exceeded.");
         }
     }
 
