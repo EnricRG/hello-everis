@@ -57,14 +57,19 @@ public class ShopList {
         return this.items.size();
     }
 
-    public void addProduct(Long productId) throws ShopListFullException {
+    public boolean addProduct(Long productId) throws ShopListFullException {
         if (this.isFull()) {
             throw new ShopListFullException(this.getName());
         }
-        this.addProductNoConstraint(productId);
+        return this.addProductNoConstraint(productId);
     }
 
-    public void addProductNoConstraint(Long productId) {
-        this.items.add(productId);
+    public boolean addProductNoConstraint(Long productId) {
+        boolean added = false;
+        if (!this.items.contains(productId)) {
+            this.items.add(productId);
+            added = true;
+        }
+        return added;
     }
 }

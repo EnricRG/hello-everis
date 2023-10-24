@@ -63,7 +63,7 @@ public class ShopListSpringRepository implements ShopListRepository {
             throw new ShopListAlreadyExistsException(owner, listName);
         }
 
-        ShopListEntity dbModel = this.mapper.toJpa(shopList);
+        ShopListEntity dbModel = this.mapper.newJpaModel(shopList);
         dbModel = this.repo.save(dbModel);
 
         // toFullString is expensive performance-wise, only evaluate it when truly needed.

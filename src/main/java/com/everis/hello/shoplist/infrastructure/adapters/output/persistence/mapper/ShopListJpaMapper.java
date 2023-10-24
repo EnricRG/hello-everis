@@ -22,7 +22,6 @@ public class ShopListJpaMapper {
             domain.addProductNoConstraint(dbItem.getProductId());
         }
 
-        //TODO move to upper layer
         if (domain.getNumberOfItems() > ShopList.MAX_ITEMS_PER_LIST) {
             log.warn("Persistence provided more elements than the max allowed for the application for list '{}' " +
                 "owned by user '{}'!", domain.getName(), domain.getOwner());
@@ -31,7 +30,7 @@ public class ShopListJpaMapper {
         return domain;
     }
 
-    public ShopListEntity toJpa(ShopList shopList) {
+    public ShopListEntity newJpaModel(ShopList shopList) {
         ShopListEntity dbModel = new ShopListEntity();
 
         dbModel.setOwner(shopList.getOwner());

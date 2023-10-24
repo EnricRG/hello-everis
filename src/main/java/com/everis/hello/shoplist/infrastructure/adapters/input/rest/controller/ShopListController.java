@@ -1,10 +1,8 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller;
 
 import com.everis.hello.shoplist.app.domain.ShopList;
-import com.everis.hello.shoplist.app.exception.CannotCreateShopListException;
-import com.everis.hello.shoplist.app.exception.MaxShopListsPerUserException;
-import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
-import com.everis.hello.shoplist.app.exception.ShopListEmptyException;
+import com.everis.hello.shoplist.app.exception.*;
+import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
@@ -26,11 +24,15 @@ public class ShopListController {
     private final ShopListRestMapper shopListMapper;
 
     private final CreateShopListUsecase createUsecase;
+    private final AddProductUsecase addProductUsecase;
 
     @Autowired
-    public ShopListController(ShopListRestMapper shopListMapper, CreateShopListUsecase createUsecase) {
+    public ShopListController(ShopListRestMapper shopListMapper,
+                              CreateShopListUsecase createUsecase,
+                              AddProductUsecase addProductUsecase) {
         this.shopListMapper = shopListMapper;
         this.createUsecase = createUsecase;
+        this.addProductUsecase = addProductUsecase;
     }
 
     @PostMapping(value = "/{listName}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -42,5 +44,17 @@ public class ShopListController {
     {
         ShopList shopList = this.createUsecase.createShopList(owner, listName, form.products);
         return ResponseEntity.ok(this.shopListMapper.toSimpleView(shopList));
+    }
+
+    @PutMapping(value = "/{listName}/products/{productId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Object> addProductToList(
+        @PathVariable("owner") String owner,
+        @PathVariable("listName") String listName,
+        @PathVariable("productId") Long productId
+    ) throws ShopListFullException, ShopListNotFoundException {
+        boolean productAdded = this.addProductUsecase.addProduct(owner, listName, productId);
+        return ResponseEntity.ok().body(productAdded ?
+            "Product added successfully to list." :
+            "Product was already in the list.");
     }
 }

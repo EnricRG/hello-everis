@@ -1,9 +1,7 @@
 package com.everis.hello.shoplist.app.domain;
 
-import com.everis.hello.shoplist.app.exception.CannotCreateShopListException;
-import com.everis.hello.shoplist.app.exception.MaxShopListsPerUserException;
-import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
-import com.everis.hello.shoplist.app.exception.ShopListEmptyException;
+import com.everis.hello.shoplist.app.exception.*;
+import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -19,7 +16,7 @@ import java.util.List;
  */
 @Slf4j
 @Validated
-public class ShopListService implements CreateShopListUsecase {
+public class ShopListService implements CreateShopListUsecase, AddProductUsecase {
 
     private final ShopListRepository repo;
 
@@ -69,5 +66,22 @@ public class ShopListService implements CreateShopListUsecase {
 
     private boolean userListLimitReached(String owner) {
         return this.repo.userListQuantity(owner) >= CreateShopListUsecase.MAX_LISTS_PER_USER;
+    }
+
+    @Override
+    @Transactional
+    public boolean addProduct(String owner, String listName, Long productId) throws ShopListNotFoundException, ShopListFullException {
+        log.trace("Adding product '{}' to list '{}' owned by user '{}'...", productId, listName, owner);
+
+        ShopList shopList = this.repo.getShopList(owner, listName);
+        log.debug("ShopList found: {}", shopList);
+
+        boolean productAdded = shopList.addProduct(productId);
+        this.repo.save(shopList);
+
+        if (productAdded) log.info("Product '{}' added to list '{}' owned by user '{}'", productId, listName, owner);
+        else log.info("Product '{}' was already in list '{}' owned by user '{}'", productId, listName, owner);
+
+        return productAdded;
     }
 }
