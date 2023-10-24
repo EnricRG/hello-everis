@@ -61,7 +61,19 @@ class CreateShopListIntegrationTest {
 
     @Test
     @Transactional
-    void create6thShopListForUser_shouldThrowException() throws AppException {
+    void createRepeatedShopList_shouldThrowAlreadyExistException() throws AppException {
+        String user = "user1";
+        String listName = "list1";
+        List<Long> products = List.of(1L,2L);
+
+        controller.createShopList(user, listName, new ShopListForm(products));
+        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertThrows(ShopListAlreadyExistsException.class, () -> controller.createShopList(user, listName, new ShopListForm(products)));
+    }
+
+    @Test
+    @Transactional
+    void create6thShopListForUser_shouldThrowMaxListException() throws AppException {
         String user = "userWith5Lists";
         String listName = "list6";
         List<Long> products = List.of(1L,2L);
