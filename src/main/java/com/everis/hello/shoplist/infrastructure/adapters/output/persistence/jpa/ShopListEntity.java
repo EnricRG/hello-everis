@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +35,20 @@ public class ShopListEntity {
     private String owner;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ShopListItem> items;
+    private Set<ShopListItem> items;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShopListEntity)) return false;
+        ShopListEntity that = (ShopListEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(owner, that.owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, owner);
+    }
 
     @Override
     public String toString() {

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * @author EnricRG
@@ -24,6 +25,19 @@ public class ShopListItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShopListItem)) return false;
+        ShopListItem that = (ShopListItem) o;
+        return Objects.equals(shopList, that.shopList) && Objects.equals(productId, that.productId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(shopList, productId);
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopList_id", nullable = false)

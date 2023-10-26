@@ -44,7 +44,7 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
         throws ShopListAlreadyExistsException, MaxShopListsPerUserException, CannotCreateShopListException,
         ShopListEmptyException
     {
-        if (this.repo.existsList(owner, listName)) {
+        if (this.repo.listExists(owner, listName)) {
             log.error("User '{}' already has a list with name '{}'.", owner, listName);
             throw new ShopListAlreadyExistsException(owner, listName);
         } else if (this.userListLimitReached(owner)) {
@@ -77,7 +77,8 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
         log.debug("ShopList found: {}", shopList);
 
         boolean productAdded = shopList.addProduct(productId);
-        this.repo.save(shopList);
+        shopList = this.repo.update(shopList);
+        log.debug("Updated shop list: {}", shopList);
 
         if (productAdded) log.info("Product '{}' added to list '{}' owned by user '{}'", productId, listName, owner);
         else log.info("Product '{}' was already in list '{}' owned by user '{}'", productId, listName, owner);

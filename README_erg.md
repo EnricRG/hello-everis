@@ -1,4 +1,16 @@
-# Decisiones de diseño
+# Decisiones de diseño e implementación
+
+## Listas únicas por usuario
+
+Ante la ambigüedad en los requerimientos descritos en README.md sobre la unicidad de las listas, he decidido que para
+este ejemplo las listas sean únicas por usuario (lo llamaremos ```owner```) y nombre de lista.
+
+## Productos sin cantidad, solo la tipologia
+
+Parecería razonable que las listas dispusieran tanto de artículos como la cantidad de ese artículo para comprar más 
+tarde. Sin embargo, como los requerimientos no lo exigen, para simplificar la implementación he decidido no disponer
+de esas cantidades, y las listas solo contienen identificadores de artículo no repetidos. En términos conocidos, serían
+más parecidas a una lista de favoritos o de deseos.
 
 ## Empaquetado por dominio
 
@@ -33,11 +45,6 @@ com.everis.hello.shoplist
 ```
 Algunas clases se han simplificado, como por ejemplo puertos sobre una misma entidad con pocas operaciones se fusionan
 en una sola interfaz. En aplicaciones grandes, sería adecuado separar las distintas operativas en interfaces diferentes.
-
-## Listas únicas por usuario
-
-Ante la ambigüedad en los requerimientos descritos en README.md sobre la unicidad de las listas, he decidido que para 
-este ejemplo las listas sean únicas por usuario (lo llamaremos ```owner```) y nombre de lista.
 
 ## No usamos librerías de mapping entre objetos.
 

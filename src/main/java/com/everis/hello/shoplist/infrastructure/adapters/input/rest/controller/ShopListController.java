@@ -47,11 +47,12 @@ public class ShopListController {
     }
 
     @PutMapping(value = "/{listName}/products/{productId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> addProductToList(
+    public ResponseEntity<String> addProductToList(
         @PathVariable("owner") String owner,
         @PathVariable("listName") String listName,
         @PathVariable("productId") Long productId
-    ) throws ShopListFullException, ShopListNotFoundException {
+    ) throws ShopListFullException, ShopListNotFoundException
+    {
         boolean productAdded = this.addProductUsecase.addProduct(owner, listName, productId);
         return ResponseEntity.ok().body(productAdded ?
             "Product added successfully to list." :
