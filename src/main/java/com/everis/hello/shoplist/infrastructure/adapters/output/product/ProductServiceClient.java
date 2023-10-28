@@ -49,6 +49,7 @@ public class ProductServiceClient implements ProductDetailProvider {
             ResponseEntity<ProductDetail> response = restTemplate.getForEntity(PRODUCT_DETAIL_ENDPOINT_TEMPLATE, ProductDetail.class,
                 "productId", id);
             if (response.getStatusCode().equals(HttpStatus.OK)) {
+            if (response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 log.warn("Product {} not found on product service.", id);
             }
             details = response.getBody();

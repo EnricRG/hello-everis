@@ -6,13 +6,16 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author EnricRG
@@ -34,7 +37,14 @@ public class ProductServiceRestConfig {
     @Bean(REST_TEMPLATE_BEAN)
     public RestTemplate getRestTemplate() {
         RestTemplate template = new RestTemplate(getClientHttpRequestFactory());
+
         template.setUriTemplateHandler(new DefaultUriBuilderFactory(serviceUrl));
+
+        // Circumvent the fact that the product service returns application/octet-stream instead of application/json
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
+        template.setMessageConverters(List.of(converter));
+
         return template;
     }
 
