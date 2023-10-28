@@ -69,7 +69,7 @@ class AddProductIntegrationTest {
         String listName = "nonExistingList";
         Long product = 2L;
 
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isEmpty());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         assertThrows(ShopListNotFoundException.class, () -> controller.addProductToList(user, listName, product));
     }
 
@@ -80,7 +80,7 @@ class AddProductIntegrationTest {
         String listName = "fullShopList";
         Long product = 2L;
 
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         assertThrows(ShopListFullException.class, () -> controller.addProductToList(user, listName, product));
     }
 }
