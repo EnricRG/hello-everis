@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.config;
 
-import com.everis.hello.shoplist.app.domain.ShopListService;
+import com.everis.hello.shoplist.app.domain.service.ShopListService;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

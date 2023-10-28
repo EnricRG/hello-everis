@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.app.ports.output;
 
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 
 import javax.validation.constraints.NotNull;

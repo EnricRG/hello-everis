@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.model;
 
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

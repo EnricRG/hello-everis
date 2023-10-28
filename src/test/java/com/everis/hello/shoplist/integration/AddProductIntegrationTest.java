@@ -1,11 +1,13 @@
-package com.everis.hello.shoplist;
+package com.everis.hello.shoplist.integration;
 
 import com.everis.hello.AppException;
+import com.everis.hello.shoplist.ShopListTestUtils;
 import com.everis.hello.shoplist.app.exception.ShopListFullException;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller.ShopListController;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa.ShopListJpaRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,7 +72,7 @@ class AddProductIntegrationTest {
         String listName = "nonExistingList";
         Long product = 2L;
 
-        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
+        Assertions.assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         assertThrows(ShopListNotFoundException.class, () -> controller.addProductToList(user, listName, product));
     }
 

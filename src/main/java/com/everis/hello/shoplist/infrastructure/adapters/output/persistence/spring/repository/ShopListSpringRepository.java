@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.repository;
 
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;

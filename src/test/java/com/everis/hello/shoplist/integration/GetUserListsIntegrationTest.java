@@ -1,4 +1,4 @@
-package com.everis.hello.shoplist;
+package com.everis.hello.shoplist.integration;
 
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller.ShopListController;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;

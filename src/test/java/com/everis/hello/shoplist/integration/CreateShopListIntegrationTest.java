@@ -1,6 +1,7 @@
-package com.everis.hello.shoplist;
+package com.everis.hello.shoplist.integration;
 
 import com.everis.hello.AppException;
+import com.everis.hello.shoplist.ShopListTestUtils;
 import com.everis.hello.shoplist.app.exception.CannotCreateShopListException;
 import com.everis.hello.shoplist.app.exception.MaxShopListsPerUserException;
 import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
@@ -9,6 +10,7 @@ import com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller.S
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa.ShopListJpaRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,7 +42,7 @@ class CreateShopListIntegrationTest {
         String listName = "list1";
         List<Long> products = List.of(1L,2L);
 
-        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
+        Assertions.assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
 
         ResponseEntity<ShopListSimpleView> response =
             controller.createShopList(user, listName, new ShopListForm(products));

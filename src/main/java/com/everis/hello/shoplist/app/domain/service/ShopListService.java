@@ -1,5 +1,6 @@
-package com.everis.hello.shoplist.app.domain;
+package com.everis.hello.shoplist.app.domain.service;
 
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.*;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;

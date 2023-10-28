@@ -1,9 +1,11 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller;
 
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.*;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;
+import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.DetailedShopListView;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +32,23 @@ public class ShopListController {
     private final DeleteShopListUsecase deleteUsecase;
     private final RemoveProductUsecase removeProductUsecase;
     private final UserListsUsecase userListsUsecase;
+    private final ShopListDetailsUsecase detailsUsecase;
 
     @Autowired
     public ShopListController(ShopListRestMapper shopListMapper,
                               CreateShopListUsecase createUsecase,
                               AddProductUsecase addProductUsecase,
                               DeleteShopListUsecase deleteUsecase,
-                              RemoveProductUsecase removeProductUsecase, UserListsUsecase userListsUsecase) {
+                              RemoveProductUsecase removeProductUsecase,
+                              UserListsUsecase userListsUsecase,
+                              ShopListDetailsUsecase detailsUsecase) {
         this.shopListMapper = shopListMapper;
         this.createUsecase = createUsecase;
         this.addProductUsecase = addProductUsecase;
         this.deleteUsecase = deleteUsecase;
         this.removeProductUsecase = removeProductUsecase;
         this.userListsUsecase = userListsUsecase;
+        this.detailsUsecase = detailsUsecase;
     }
 
     @PostMapping(value = "/{listName}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -107,6 +113,18 @@ public class ShopListController {
         List<ShopList> shopLists = this.userListsUsecase.getListsForUser(owner);
         List<ShopListSimpleView> view = this.shopListMapper.toSimpleView(shopLists);
         log.debug("removeProductFromList shop lists for user '{}': {}", owner, view);
+        return ResponseEntity.ok().body(view);
+    }
+
+    @GetMapping(value = "/{listName}/details", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<DetailedShopListView> getListDetails(
+        @PathVariable("owner") String owner,
+        @PathVariable("listName") String listName
+    ) throws ShopListNotFoundException {
+        log.debug("Request received on getListDetails. Owner: '{}', list name: {}.", owner, listName);
+        DetailedShopList shopListDetail = this.detailsUsecase.getDetails(owner, listName);
+        DetailedShopListView view = this.shopListMapper.toDetailedView(shopListDetail);
+        log.debug("getListDetails shop list details for list '{}' owned by user '{}': {}", listName, owner, view);
         return ResponseEntity.ok().body(view);
     }
 }
