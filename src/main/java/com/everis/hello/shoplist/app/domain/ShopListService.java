@@ -3,6 +3,7 @@ package com.everis.hello.shoplist.app.domain;
 import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
+import com.everis.hello.shoplist.app.ports.input.DeleteShopListUsecase;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Slf4j
 @Validated
-public class ShopListService implements CreateShopListUsecase, AddProductUsecase {
+public class ShopListService implements CreateShopListUsecase, AddProductUsecase, DeleteShopListUsecase {
 
     private final ShopListRepository repo;
 
@@ -38,6 +39,39 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
         log.info("ShopList '{}' successfully created for user '{}'.", listName, owner);
         log.debug("ShopList created: {}", s);
         return s;
+    }
+
+    @Override
+    @Transactional
+    public boolean addProduct(String owner, String listName, Long productId) throws ShopListNotFoundException, ShopListFullException {
+        log.trace("Adding product '{}' to list '{}' owned by user '{}'...", productId, listName, owner);
+
+        ShopList shopList = this.repo.getShopList(owner, listName);
+        log.debug("ShopList found: {}", shopList);
+
+        boolean productAdded = shopList.addProduct(productId);
+        shopList = this.repo.update(shopList);
+        log.debug("Updated shop list: {}", shopList);
+
+        if (productAdded) log.info("Product '{}' added to list '{}' owned by user '{}'", productId, listName, owner);
+        else log.info("Product '{}' was already in list '{}' owned by user '{}'", productId, listName, owner);
+
+        return productAdded;
+    }
+
+    @Override
+    public void deleteList(String owner, String listName) throws ShopListNotFoundException {
+        log.trace("Starting deletion of list '{}' owned by user '{}'...", listName, owner);
+
+        boolean listExists = this.repo.listExists(owner, listName);
+        if (!listExists) {
+            log.error("Cannot delete list '{}' owned by user '{}' because it does not exist.", listName, owner);
+            throw new ShopListNotFoundException(owner, listName);
+        }
+        log.debug("ShopList '{}' owned by user '{}' exists.", listName, owner);
+
+        this.repo.deleteList(owner, listName);
+        log.info("ShopList '{}' owned by user '{}' has been deleted.", listName, owner);
     }
 
     private void validateForCreation(String owner, String listName, List<Long> products)
@@ -66,23 +100,5 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
 
     private boolean userListLimitReached(String owner) {
         return this.repo.userListQuantity(owner) >= CreateShopListUsecase.MAX_LISTS_PER_USER;
-    }
-
-    @Override
-    @Transactional
-    public boolean addProduct(String owner, String listName, Long productId) throws ShopListNotFoundException, ShopListFullException {
-        log.trace("Adding product '{}' to list '{}' owned by user '{}'...", productId, listName, owner);
-
-        ShopList shopList = this.repo.getShopList(owner, listName);
-        log.debug("ShopList found: {}", shopList);
-
-        boolean productAdded = shopList.addProduct(productId);
-        shopList = this.repo.update(shopList);
-        log.debug("Updated shop list: {}", shopList);
-
-        if (productAdded) log.info("Product '{}' added to list '{}' owned by user '{}'", productId, listName, owner);
-        else log.info("Product '{}' was already in list '{}' owned by user '{}'", productId, listName, owner);
-
-        return productAdded;
     }
 }

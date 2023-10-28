@@ -72,7 +72,7 @@ public class ShopListController {
     }
 
     @DeleteMapping(value = "/{listName}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ShopListSimpleView> createShopList(
+    public ResponseEntity<Object> deleteShopList(
         @PathVariable("owner") String owner,
         @PathVariable("listName") String listName
     ) throws ShopListNotFoundException {
