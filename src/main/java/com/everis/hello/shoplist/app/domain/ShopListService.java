@@ -4,6 +4,7 @@ import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.app.ports.input.DeleteShopListUsecase;
+import com.everis.hello.shoplist.app.ports.input.RemoveProductUsecase;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Slf4j
 @Validated
-public class ShopListService implements CreateShopListUsecase, AddProductUsecase, DeleteShopListUsecase {
+public class ShopListService implements CreateShopListUsecase, AddProductUsecase, DeleteShopListUsecase, RemoveProductUsecase {
 
     private final ShopListRepository repo;
 
@@ -72,6 +73,25 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
 
         this.repo.deleteList(owner, listName);
         log.info("ShopList '{}' owned by user '{}' has been deleted.", listName, owner);
+    }
+
+    @Override
+    public int removeProduct(String owner, String listName, Long productId) throws ShopListNotFoundException {
+        log.trace("Adding product '{}' to list '{}' owned by user '{}'...", productId, listName, owner);
+
+        ShopList shopList = this.repo.getShopList(owner, listName);
+        log.debug("ShopList found: {}", shopList);
+
+        int listSize = shopList.removeProduct(productId);
+        if (shopList.needsDeletion()) {
+            this.repo.deleteList(shopList.getOwner(), shopList.getName());
+            log.info("ShopList '{}' owned by user '{}' has been deleted as a result of becoming empty.", listName, owner);
+        } else {
+            this.repo.update(shopList);
+        }
+
+        log.debug("ShopList after product removal: {}", shopList);
+        return listSize;
     }
 
     private void validateForCreation(String owner, String listName, List<Long> products)
