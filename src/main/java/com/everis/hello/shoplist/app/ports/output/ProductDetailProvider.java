@@ -2,6 +2,7 @@ package com.everis.hello.shoplist.app.ports.output;
 
 import com.everis.hello.shoplist.app.domain.model.ProductDetail;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -24,5 +25,5 @@ public interface ProductDetailProvider {
      *
      * @return A list of product details. Never null.
      */
-    List<ProductDetail> getDetails(List<Long> ids);
+    List<ProductDetail> getDetails(@NotNull List<Long> ids);
 }
