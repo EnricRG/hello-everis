@@ -53,7 +53,7 @@ public class ShopListController {
     ) throws ShopListAlreadyExistsException, MaxShopListsPerUserException, CannotCreateShopListException, ShopListEmptyException
     {
         log.debug("Request received on createShopList. Owner: '{}', listName: '{}', form: {}", owner, listName, form);
-        ShopList shopList = this.createUsecase.createShopList(owner, listName, form.products);
+        ShopList shopList = this.createUsecase.createShopList(owner, listName, form.getProducts());
         ShopListSimpleView view = this.shopListMapper.toSimpleView(shopList);
         log.debug("createShopList result view: {}", view);
         return ResponseEntity.ok(view);

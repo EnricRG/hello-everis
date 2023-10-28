@@ -1,10 +1,7 @@
 package com.everis.hello.shoplist.app.domain;
 
 import com.everis.hello.shoplist.app.exception.*;
-import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
-import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
-import com.everis.hello.shoplist.app.ports.input.DeleteShopListUsecase;
-import com.everis.hello.shoplist.app.ports.input.RemoveProductUsecase;
+import com.everis.hello.shoplist.app.ports.input.*;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,8 @@ import java.util.List;
  */
 @Slf4j
 @Validated
-public class ShopListService implements CreateShopListUsecase, AddProductUsecase, DeleteShopListUsecase, RemoveProductUsecase {
+public class ShopListService implements CreateShopListUsecase, AddProductUsecase,
+    DeleteShopListUsecase, RemoveProductUsecase, UserListsUsecase {
 
     private final ShopListRepository repo;
 
@@ -92,6 +90,17 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
 
         log.debug("ShopList after product removal: {}", shopList);
         return listSize;
+    }
+
+    @Override
+    public List<ShopList> getListsForUser(String owner) {
+        log.trace("Retrieving lists owned by user '{}'...", owner);
+
+        List<ShopList> shopLists = this.repo.getShopLists(owner);
+        log.info("User '{}' has {} lists registered.", owner, shopLists.size());
+        log.debug("ShopList found: {}", shopLists);
+
+        return shopLists;
     }
 
     private void validateForCreation(String owner, String listName, List<Long> products)
