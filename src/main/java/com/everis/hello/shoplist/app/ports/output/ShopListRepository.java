@@ -4,6 +4,7 @@ import com.everis.hello.shoplist.app.domain.ShopList;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author EnricRG
@@ -26,10 +27,20 @@ public interface ShopListRepository {
      * @param owner Owner of the list.
      * @param listName Name of the list.
      *
-     * @return Whether the list exists for that user or not.
+     * @return The {@link ShopList} found.
      * @throws ShopListNotFoundException When the list does not exist.
      */
     ShopList getShopList(@NotNull String owner, @NotNull String listName) throws ShopListNotFoundException;
+
+    /**
+     * Retrieves the lists owned by a given user. If the user has no lists or the user is not registered, this method
+     * will return empty list.
+     *
+     * @param owner Owner of the list.
+     *
+     * @return The lists owned by the user. Never null.
+     */
+    List<ShopList> getShopLists(@NotNull String owner);
 
     /**
      * Synchronizes the {@link ShopList} object to persistent storage. If the list didn't exist in the repository, it

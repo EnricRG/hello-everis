@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author EnricRG
@@ -29,6 +32,14 @@ public class ShopListJpaMapper {
         }
 
         return domain;
+    }
+
+    public List<ShopList> toDomain(@NotNull List<ShopListEntity> dbModels) {
+        List<ShopList> lists = new ArrayList<>();
+        for (ShopListEntity dbModel : dbModels) {
+            lists.add(this.toDomain(dbModel));
+        }
+        return lists;
     }
 
     /** Updates the given {@link ShopListEntity} instance to match the provided {@link ShopList} domain object. */
@@ -57,5 +68,11 @@ public class ShopListJpaMapper {
         dbItems.addAll(mappedJpaItems); // Add the remaining elements that were not present in the db.
 
         dbModel.setItems(dbItems);
+    }
+
+    public String stringifyFull(@NotNull List<ShopListEntity> dbModels) {
+        return dbModels.stream()
+            .map(ShopListEntity::toStringFull)
+            .collect(Collectors.joining(", ", "List<ShopListEntity>[", "]"));
     }
 }

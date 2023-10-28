@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -52,6 +53,20 @@ public class ShopListSpringRepository implements ShopListRepository {
         }
 
         return this.mapper.toDomain(dbModel);
+    }
+
+    @Override
+    public List<ShopList> getShopLists(String owner) {
+        log.debug("Retrieving shop lists for user '{}'", owner);
+
+        List<ShopListEntity> dbModels = this.repo.findByOwner(owner, DEFAULT_SORT);
+
+        // toFullString is expensive performance-wise, only evaluate it when truly needed.
+        if (log.isDebugEnabled()) {
+            log.debug("Shop List retrieved from DB: {}", this.mapper.stringifyFull(dbModels));
+        }
+
+        return this.mapper.toDomain(dbModels);
     }
 
     public ShopList save(ShopList shopList) {
