@@ -36,7 +36,7 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
 
         this.validateForCreation(owner,listName,products);
 
-        ShopList s = repo.create(newShopList(listName, owner, products));
+        ShopList s = this.repo.save(newShopList(listName, owner, products));
         log.info("ShopList '{}' successfully created for user '{}'.", listName, owner);
         log.debug("ShopList created: {}", s);
         return s;
@@ -51,7 +51,7 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
         log.debug("ShopList found: {}", shopList);
 
         boolean productAdded = shopList.addProduct(productId);
-        shopList = this.repo.update(shopList);
+        shopList = this.repo.save(shopList);
         log.debug("Updated shop list: {}", shopList);
 
         if (productAdded) log.info("Product '{}' added to list '{}' owned by user '{}'", productId, listName, owner);
@@ -87,7 +87,7 @@ public class ShopListService implements CreateShopListUsecase, AddProductUsecase
             this.repo.deleteList(shopList.getOwner(), shopList.getName());
             log.info("ShopList '{}' owned by user '{}' has been deleted as a result of becoming empty.", listName, owner);
         } else {
-            this.repo.update(shopList);
+            this.repo.save(shopList);
         }
 
         log.debug("ShopList after product removal: {}", shopList);

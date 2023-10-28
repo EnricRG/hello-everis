@@ -1,7 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.repository;
 
 import com.everis.hello.shoplist.app.domain.ShopList;
-import com.everis.hello.shoplist.app.exception.ShopListAlreadyExistsException;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
@@ -55,35 +54,19 @@ public class ShopListSpringRepository implements ShopListRepository {
         return this.mapper.toDomain(dbModel);
     }
 
-    @Override
-    public ShopList create(ShopList shopList) throws ShopListAlreadyExistsException {
+    public ShopList save(ShopList shopList) {
         String listName = shopList.getName();
         String owner = shopList.getOwner();
-        log.debug("Creating new shop list with name '{}' for user '{}'", listName, owner);
 
-        if (this.listExists(owner, listName)) {
-            throw new ShopListAlreadyExistsException(owner, listName);
+        ShopListEntity list;
+        Optional<ShopListEntity> lOpt = this.repo.findByOwnerAndListName(owner, listName);
+        if (lOpt.isPresent()) {
+            list = lOpt.get();
+            log.debug("Updating existing list with name '{}' for user '{}'", listName, owner);
+        } else {
+            list = new ShopListEntity();
+            log.debug("Creating new shop list with name '{}' for user '{}'", listName, owner);
         }
-
-        ShopListEntity dbModel = this.mapper.toJpaModel(shopList, new ShopListEntity());
-        dbModel = this.repo.save(dbModel);
-
-        // toFullString is expensive performance-wise, only evaluate it when truly needed.
-        if (log.isDebugEnabled()) {
-            log.debug("Shop List persisted to DB: {}", dbModel.toStringFull());
-        }
-
-        return shopList; //Currently returning same instance, could change in the future.
-    }
-
-    @Override
-    public ShopList update(ShopList shopList) throws ShopListNotFoundException {
-        String listName = shopList.getName();
-        String owner = shopList.getOwner();
-        log.debug("Updating existing list with name '{}' for user '{}'", listName, owner);
-
-        ShopListEntity list = this.repo.findByOwnerAndListName(owner, listName)
-            .orElseThrow(() -> new ShopListNotFoundException(owner, listName));
 
         ShopListEntity dbModel = this.mapper.toJpaModel(shopList, list);
         dbModel = this.repo.save(dbModel);
