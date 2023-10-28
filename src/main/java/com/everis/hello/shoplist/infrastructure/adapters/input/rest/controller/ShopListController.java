@@ -5,6 +5,7 @@ import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.AddProductUsecase;
 import com.everis.hello.shoplist.app.ports.input.CreateShopListUsecase;
 import com.everis.hello.shoplist.app.ports.input.DeleteShopListUsecase;
+import com.everis.hello.shoplist.app.ports.input.RemoveProductUsecase;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
@@ -29,16 +30,19 @@ public class ShopListController {
     private final CreateShopListUsecase createUsecase;
     private final AddProductUsecase addProductUsecase;
     private final DeleteShopListUsecase deleteUsecase;
+    private final RemoveProductUsecase removeProductUsecase;
 
     @Autowired
     public ShopListController(ShopListRestMapper shopListMapper,
                               CreateShopListUsecase createUsecase,
                               AddProductUsecase addProductUsecase,
-                              DeleteShopListUsecase deleteUsecase) {
+                              DeleteShopListUsecase deleteUsecase,
+                              RemoveProductUsecase removeProductUsecase) {
         this.shopListMapper = shopListMapper;
         this.createUsecase = createUsecase;
         this.addProductUsecase = addProductUsecase;
         this.deleteUsecase = deleteUsecase;
+        this.removeProductUsecase = removeProductUsecase;
     }
 
     @PostMapping(value = "/{listName}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -76,9 +80,22 @@ public class ShopListController {
         @PathVariable("owner") String owner,
         @PathVariable("listName") String listName
     ) throws ShopListNotFoundException {
-        log.debug("Request received on createShopList. Owner: '{}', listName: '{}'", owner, listName);
+        log.debug("Request received on deleteShopList. Owner: '{}', listName: '{}'", owner, listName);
         this.deleteUsecase.deleteList(owner, listName);
         log.debug("addProductToList successfully ran.");
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{listName}/products/{productId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Integer> removeProductFromList(
+        @PathVariable("owner") String owner,
+        @PathVariable("listName") String listName,
+        @PathVariable("productId") Long productId
+    ) throws ShopListNotFoundException
+    {
+        log.debug("Request received on removeProductFromList. Owner: '{}', listName: '{}', productId: {}", owner, listName, productId);
+        int listSize = this.removeProductUsecase.removeProduct(owner, listName, productId);
+        log.debug("removeProductFromList items remaining: {}", listSize);
+        return ResponseEntity.ok().body(listSize);
     }
 }
