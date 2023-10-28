@@ -36,15 +36,26 @@ public class ShopListJpaMapper {
         dbModel.setOwner(shopList.getOwner());
         dbModel.setName(shopList.getName());
 
-        Set<ShopListItem> dbItems = dbModel.getItems() == null ? new HashSet<>() : dbModel.getItems();
-        for (Long productId : shopList.getItems()) {
-            boolean added = dbItems.add(new ShopListItem(dbModel, productId));
-            // Because it's a set, this checks if it exists in db with business-key equals implementation
-            if (!added) log.debug("Product {} was already present in db for list '{}' for user '{}'.",
-                productId, shopList.getName(), shopList.getOwner());
-        }
-        dbModel.setItems(dbItems);
+        this.synchronizeItems(shopList, dbModel);
 
         return dbModel;
+    }
+
+    // This method takes advantage of the fact that both ShopListEntity and ShopListItem entities have redefined their
+    // equals() and hashCode() implementations to match business key uniqueness. This allows for an elegant implementation
+    // of this Set operations.
+    private void synchronizeItems(ShopList shopList, ShopListEntity dbModel) {
+        //This set contains all domain products mapped to its JPA object
+        Set<ShopListItem> mappedJpaItems = new HashSet<>();
+        for (Long productId : shopList.getItems()) {
+            mappedJpaItems.add(new ShopListItem(dbModel, productId));
+        }
+
+        Set<ShopListItem> dbItems = dbModel.getItems() == null ? new HashSet<>() : dbModel.getItems();
+        dbItems.retainAll(mappedJpaItems); // Drop those items that are not present in the domain object.
+
+        dbItems.addAll(mappedJpaItems); // Add the remaining elements that were not present in the db.
+
+        dbModel.setItems(dbItems);
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * @author EnricRG
  */
@@ -98,5 +100,23 @@ public class ShopListSpringRepository implements ShopListRepository {
     public int userListQuantity(String owner) {
         log.debug("Checking how many lists does user '{}' own.", owner);
         return this.repo.findByOwner(owner, DEFAULT_SORT).size();
+    }
+
+    @Override
+    public boolean deleteList(String owner, String listName) {
+        log.debug("Deleting list '{}' owned by '{}'.", listName, owner);
+        boolean deleted = false;
+
+        Optional<ShopListEntity> lOpt = this.repo.findByOwnerAndListName(owner, listName);
+        if (lOpt.isPresent()) {
+            this.repo.delete(lOpt.get());
+            log.info("List '{}' owned by '{}' successfully deleted from the repository.", listName, owner);
+            deleted = true;
+        } else {
+            log.warn("Called deletion on list '{}' owned by user '{}' that does not exist in the repository!",
+                listName, owner);
+        }
+
+        return deleted;
     }
 }

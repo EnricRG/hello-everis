@@ -9,9 +9,7 @@ import com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller.S
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa.ShopListJpaRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -42,7 +40,7 @@ class CreateShopListIntegrationTest {
         String listName = "list1";
         List<Long> products = List.of(1L,2L);
 
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
 
         ResponseEntity<ShopListSimpleView> response =
             controller.createShopList(user, listName, new ShopListForm(products));
@@ -50,7 +48,7 @@ class CreateShopListIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(listName, response.getBody().name);
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
     }
 
     @Test
@@ -61,7 +59,7 @@ class CreateShopListIntegrationTest {
         List<Long> products = List.of(1L,2L);
 
         controller.createShopList(user, listName, new ShopListForm(products));
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
 
         List<Long> products2 = List.of(3L);
         assertThrows(
@@ -69,7 +67,7 @@ class CreateShopListIntegrationTest {
             () -> controller.createShopList(user, listName, new ShopListForm(products2))
         );
         // Check that persisted list does not contain elements of the second one (it hasn't changed).
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).get().getItems().stream()
+        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).orElseThrow().getItems().stream()
             .noneMatch(x -> x.getProductId().equals(3L)));
     }
 
@@ -80,12 +78,12 @@ class CreateShopListIntegrationTest {
         String listName = "list6";
         List<Long> products = List.of(1L,2L);
 
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         assertThrows(
             MaxShopListsPerUserException.class,
             () -> controller.createShopList(user, listName, new ShopListForm(products))
         );
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
     }
 
     @Test
@@ -95,12 +93,12 @@ class CreateShopListIntegrationTest {
         String listName = "list1";
         List<Long> products = List.of();
 
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         assertThrows(
             ShopListEmptyException.class,
             () -> controller.createShopList(user, listName, new ShopListForm(products))
         );
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
     }
 
     @Test
@@ -110,14 +108,14 @@ class CreateShopListIntegrationTest {
         String listName = "list1"; // List with 25 elements
         List<Long> products = LongStream.rangeClosed(1, 25).boxed().collect(Collectors.toList());
 
-        assertFalse(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertFalse(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
         ResponseEntity<ShopListSimpleView> response =
             controller.createShopList(user, listName, new ShopListForm(products));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(listName, response.getBody().name);
-        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
 
         // 25 elements were ok, let's try 26.
         String listName2 = "list2";

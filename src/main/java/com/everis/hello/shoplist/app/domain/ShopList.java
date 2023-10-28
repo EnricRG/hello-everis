@@ -74,4 +74,9 @@ public class ShopList {
         }
         return added;
     }
+
+    public int removeProduct(Long productId) {
+        this.items.remove(productId);
+        return this.items.size();
+    }
 }
