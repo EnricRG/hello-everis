@@ -26,19 +26,6 @@ public class ShopListItem {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ShopListItem)) return false;
-        ShopListItem that = (ShopListItem) o;
-        return Objects.equals(shopList, that.shopList) && Objects.equals(productId, that.productId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(shopList, productId);
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopList_id", nullable = false)
     private ShopListEntity shopList;
@@ -49,6 +36,21 @@ public class ShopListItem {
     public ShopListItem(ShopListEntity shopList, Long productId) {
         this.shopList = shopList;
         this.productId = productId;
+    }
+
+    /** Business key equals implementation. */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShopListItem)) return false;
+        ShopListItem that = (ShopListItem) o;
+        return Objects.equals(shopList, that.shopList) && Objects.equals(productId, that.productId);
+    }
+
+    /** Business key hashCode implementation. */
+    @Override
+    public int hashCode() {
+        return Objects.hash(shopList, productId);
     }
 
     @Override

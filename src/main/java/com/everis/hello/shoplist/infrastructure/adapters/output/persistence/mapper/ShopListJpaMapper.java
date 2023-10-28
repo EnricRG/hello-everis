@@ -39,6 +39,7 @@ public class ShopListJpaMapper {
         Set<ShopListItem> dbItems = dbModel.getItems() == null ? new HashSet<>() : dbModel.getItems();
         for (Long productId : shopList.getItems()) {
             boolean added = dbItems.add(new ShopListItem(dbModel, productId));
+            // Because it's a set, this checks if it exists in db with business-key equals implementation
             if (!added) log.debug("Product {} was already present in db for list '{}' for user '{}'.",
                 productId, shopList.getName(), shopList.getOwner());
         }

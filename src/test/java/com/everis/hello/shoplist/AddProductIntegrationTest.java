@@ -1,6 +1,8 @@
 package com.everis.hello.shoplist;
 
 import com.everis.hello.AppException;
+import com.everis.hello.shoplist.app.exception.ShopListFullException;
+import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller.ShopListController;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa.ShopListJpaRepository;
@@ -30,7 +32,7 @@ class AddProductIntegrationTest {
     void addProductToList_shouldReturnOk() throws AppException {
         String user = "userWith5Lists";
         String listName = "list1";
-        Long product = 2L;
+        Long product = 6L;
 
         ShopListEntity list = shopListJpaRepo.findByOwnerAndListName(user, listName).orElse(null);
         assertNotNull(list);
@@ -44,7 +46,7 @@ class AddProductIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("Product added successfully"));
-        assertEquals(1, list.getItems().size());
+        assertEquals(2, list.getItems().size()); // List already contained one element
         assertTrue(list.getItems().stream().anyMatch(x -> x.getProductId().equals(product))); // List now contains the product.
 
         // Adding the same product again, should work ok and the list content should not change
@@ -55,8 +57,30 @@ class AddProductIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("Product was already in the list"));
-        assertEquals(1, list.getItems().size());
+        assertEquals(2, list.getItems().size()); // List already contained one element
         assertTrue(list.getItems().stream().anyMatch(x -> x.getProductId().equals(product))); // List now contains the product.
     }
 
+
+    @Test
+    @Transactional
+    void addProductToNonExistingList_shouldThrowNotFoundException() throws AppException {
+        String user = "nonExistingUser";
+        String listName = "nonExistingList";
+        Long product = 2L;
+
+        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isEmpty());
+        assertThrows(ShopListNotFoundException.class, () -> controller.addProductToList(user, listName, product));
+    }
+
+    @Test
+    @Transactional
+    void addProductToFullList_shouldThrowListFullException() throws AppException {
+        String user = "userWithFullShopList";
+        String listName = "fullShopList";
+        Long product = 2L;
+
+        assertTrue(shopListJpaRepo.findByOwnerAndListName(user, listName).isPresent());
+        assertThrows(ShopListFullException.class, () -> controller.addProductToList(user, listName, product));
+    }
 }

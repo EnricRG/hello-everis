@@ -34,9 +34,10 @@ public class ShopListEntity {
     @Column(name = "owner", nullable = false)
     private String owner;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shopList", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ShopListItem> items;
 
+    /** Business key equals implementation. */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,6 +46,7 @@ public class ShopListEntity {
         return Objects.equals(name, that.name) && Objects.equals(owner, that.owner);
     }
 
+    /** Business key hashCode implementation. */
     @Override
     public int hashCode() {
         return Objects.hash(name, owner);

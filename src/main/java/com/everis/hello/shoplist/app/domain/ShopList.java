@@ -57,6 +57,7 @@ public class ShopList {
         return this.items.size();
     }
 
+    // You must call this from business logic.
     public boolean addProduct(Long productId) throws ShopListFullException {
         if (this.isFull()) {
             throw new ShopListFullException(this.getName());
@@ -64,6 +65,7 @@ public class ShopList {
         return this.addProductNoConstraint(productId);
     }
 
+    // You should call this from database operations.
     public boolean addProductNoConstraint(Long productId) {
         boolean added = false;
         if (!this.items.contains(productId)) {
