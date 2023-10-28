@@ -23,3 +23,7 @@ logging:
 hibernate:
   hbm2ddl:
     auto: create
+
+everis:
+  products:
+    url: http://localhost:8081
