@@ -37,6 +37,7 @@ class AddProductIntegrationTest {
         ShopListEntity list = shopListJpaRepo.findByOwnerAndListName(user, listName).orElse(null);
         assertNotNull(list);
         assertFalse(list.getItems().stream().anyMatch(x -> x.getProductId().equals(product))); //List does not contain the product
+        int originalListSize = list.getItems().size();
 
         ResponseEntity<String> response = controller.addProductToList(user, listName, product);
 
@@ -46,7 +47,7 @@ class AddProductIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("Product added successfully"));
-        assertEquals(2, list.getItems().size()); // List already contained one element
+        assertEquals(originalListSize + 1, list.getItems().size()); // List already contained one element
         assertTrue(list.getItems().stream().anyMatch(x -> x.getProductId().equals(product))); // List now contains the product.
 
         // Adding the same product again, should work ok and the list content should not change
@@ -57,7 +58,7 @@ class AddProductIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("Product was already in the list"));
-        assertEquals(2, list.getItems().size()); // List already contained one element
+        assertEquals(originalListSize + 1, list.getItems().size()); // List already contained one element
         assertTrue(list.getItems().stream().anyMatch(x -> x.getProductId().equals(product))); // List now contains the product.
     }
 
