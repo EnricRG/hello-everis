@@ -47,7 +47,7 @@ class CreateShopListIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(listName, response.getBody().name);
+        assertEquals(listName, response.getBody().getName());
         assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
     }
 
@@ -114,7 +114,7 @@ class CreateShopListIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(listName, response.getBody().name);
+        assertEquals(listName, response.getBody().getName());
         assertTrue(ShopListTestUtils.shopListExists(shopListJpaRepo, user, listName));
 
         // 25 elements were ok, let's try 26.
