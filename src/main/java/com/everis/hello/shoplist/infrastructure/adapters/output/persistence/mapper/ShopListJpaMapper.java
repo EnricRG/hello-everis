@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.mapper;
 
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
 import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListItem;
 import lombok.extern.slf4j.Slf4j;

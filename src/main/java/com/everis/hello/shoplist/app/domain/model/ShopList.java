@@ -1,4 +1,4 @@
-package com.everis.hello.shoplist.app.domain;
+package com.everis.hello.shoplist.app.domain.model;
 
 
 import com.everis.hello.shoplist.app.exception.ShopListFullException;

@@ -1,7 +1,7 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller;
 
-import com.everis.hello.shoplist.app.domain.DetailedShopList;
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.app.exception.*;
 import com.everis.hello.shoplist.app.ports.input.*;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;

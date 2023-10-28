@@ -1,7 +1,7 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper;
 
-import com.everis.hello.shoplist.app.domain.DetailedShopList;
-import com.everis.hello.shoplist.app.domain.ShopList;
+import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+import com.everis.hello.shoplist.app.domain.model.ShopList;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.DetailedShopListView;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ProductDetailView;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;

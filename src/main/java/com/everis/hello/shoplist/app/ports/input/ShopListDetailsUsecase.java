@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.app.ports.input;
 
-import com.everis.hello.shoplist.app.domain.DetailedShopList;
+import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
 import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
 
 /**

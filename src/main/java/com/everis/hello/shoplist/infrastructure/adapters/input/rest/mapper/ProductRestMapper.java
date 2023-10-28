@@ -1,6 +1,6 @@
 package com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper;
 
-import com.everis.hello.shoplist.app.domain.ProductDetail;
+import com.everis.hello.shoplist.app.domain.model.ProductDetail;
 import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ProductDetailView;
 import org.springframework.stereotype.Component;
 
