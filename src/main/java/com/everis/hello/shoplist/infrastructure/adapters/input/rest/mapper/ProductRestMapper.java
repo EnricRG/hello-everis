@@ -23,6 +23,6 @@ public class ProductRestMapper {
     }
 
     public ProductDetailView toDetailView(@NotNull ProductDetail p) {
-        return new ProductDetailView(p.getId(), p.getName());
+        return new ProductDetailView(p.getId(), p.getName(), p.getSize(), p.getPrice(), p.getColor());
     }
 }

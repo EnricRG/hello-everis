@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,9 +28,15 @@ public class ProductServiceClient implements ProductDetailProvider {
 
     private final RestTemplate restTemplate;
 
+    private final ProductServiceMapper productMapper;
+
     @Autowired
-    public ProductServiceClient(@Qualifier(ProductServiceRestConfig.REST_TEMPLATE_BEAN) RestTemplate restTemplate) {
+    public ProductServiceClient(
+        @Qualifier(ProductServiceRestConfig.REST_TEMPLATE_BEAN) RestTemplate restTemplate,
+        ProductServiceMapper productMapper
+    ) {
         this.restTemplate = restTemplate;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -46,13 +53,17 @@ public class ProductServiceClient implements ProductDetailProvider {
 
         ProductDetail details = null;
         try {
-            ResponseEntity<ProductDetail> response = restTemplate.getForEntity(PRODUCT_DETAIL_ENDPOINT_TEMPLATE, ProductDetail.class,
-                "productId", id);
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
+            ResponseEntity<ProductView> response = restTemplate.getForEntity(
+                PRODUCT_DETAIL_ENDPOINT_TEMPLATE,
+                ProductView.class,
+                Map.of("productId", id)
+            );
+
             if (response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 log.warn("Product {} not found on product service.", id);
             }
-            details = response.getBody();
+
+            details = productMapper.fromView(response.getBody());
             log.debug("Product retrieved: {}", details);
         } catch (ResourceAccessException rae) {
             log.error("Problem connecting with product service.", rae);
