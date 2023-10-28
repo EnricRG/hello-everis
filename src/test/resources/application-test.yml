@@ -12,6 +12,14 @@ spring:
   h2:
     console:
       enabled: true
+
+logging:
+  level:
+    root: INFO
+    com:
+      everis:
+        hello: DEBUG
+
 hibernate:
   hbm2ddl:
     auto: create

@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +34,23 @@ public class ShopListEntity {
     @Column(name = "owner", nullable = false)
     private String owner;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ShopListItem> items;
+    @OneToMany(mappedBy = "shopList", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ShopListItem> items;
+
+    /** Business key equals implementation. */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShopListEntity)) return false;
+        ShopListEntity that = (ShopListEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(owner, that.owner);
+    }
+
+    /** Business key hashCode implementation. */
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, owner);
+    }
 
     @Override
     public String toString() {

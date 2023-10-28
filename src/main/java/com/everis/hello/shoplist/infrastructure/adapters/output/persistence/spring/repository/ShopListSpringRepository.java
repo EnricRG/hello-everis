@@ -31,7 +31,7 @@ public class ShopListSpringRepository implements ShopListRepository {
     }
 
     @Override
-    public boolean existsList(String owner, String listName) {
+    public boolean listExists(String owner, String listName) {
         log.debug("Checking if list '{}' exists for user '{}'", listName, owner);
 
         // Can be optimized: query to retrieve only the existence of the element without fetching its fields.
@@ -59,11 +59,31 @@ public class ShopListSpringRepository implements ShopListRepository {
         String owner = shopList.getOwner();
         log.debug("Creating new shop list with name '{}' for user '{}'", listName, owner);
 
-        if (this.existsList(owner, listName)) {
+        if (this.listExists(owner, listName)) {
             throw new ShopListAlreadyExistsException(owner, listName);
         }
 
-        ShopListEntity dbModel = this.mapper.toJpa(shopList);
+        ShopListEntity dbModel = this.mapper.toJpaModel(shopList, new ShopListEntity());
+        dbModel = this.repo.save(dbModel);
+
+        // toFullString is expensive performance-wise, only evaluate it when truly needed.
+        if (log.isDebugEnabled()) {
+            log.debug("Shop List persisted to DB: {}", dbModel.toStringFull());
+        }
+
+        return shopList; //Currently returning same instance, could change in the future.
+    }
+
+    @Override
+    public ShopList update(ShopList shopList) throws ShopListNotFoundException {
+        String listName = shopList.getName();
+        String owner = shopList.getOwner();
+        log.debug("Updating existing list with name '{}' for user '{}'", listName, owner);
+
+        ShopListEntity list = this.repo.findByOwnerAndListName(owner, listName)
+            .orElseThrow(() -> new ShopListNotFoundException(owner, listName));
+
+        ShopListEntity dbModel = this.mapper.toJpaModel(shopList, list);
         dbModel = this.repo.save(dbModel);
 
         // toFullString is expensive performance-wise, only evaluate it when truly needed.

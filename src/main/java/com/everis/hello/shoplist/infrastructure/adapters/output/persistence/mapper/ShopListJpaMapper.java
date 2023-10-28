@@ -6,8 +6,9 @@ import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author EnricRG
@@ -22,7 +23,6 @@ public class ShopListJpaMapper {
             domain.addProductNoConstraint(dbItem.getProductId());
         }
 
-        //TODO move to upper layer
         if (domain.getNumberOfItems() > ShopList.MAX_ITEMS_PER_LIST) {
             log.warn("Persistence provided more elements than the max allowed for the application for list '{}' " +
                 "owned by user '{}'!", domain.getName(), domain.getOwner());
@@ -31,15 +31,17 @@ public class ShopListJpaMapper {
         return domain;
     }
 
-    public ShopListEntity toJpa(ShopList shopList) {
-        ShopListEntity dbModel = new ShopListEntity();
-
+    /** Updates the given {@link ShopListEntity} instance to match the provided {@link ShopList} domain object. */
+    public ShopListEntity toJpaModel(@NotNull ShopList shopList, @NotNull ShopListEntity dbModel) {
         dbModel.setOwner(shopList.getOwner());
         dbModel.setName(shopList.getName());
 
-        List<ShopListItem> dbItems = new ArrayList<>();
+        Set<ShopListItem> dbItems = dbModel.getItems() == null ? new HashSet<>() : dbModel.getItems();
         for (Long productId : shopList.getItems()) {
-            dbItems.add(new ShopListItem(dbModel, productId));
+            boolean added = dbItems.add(new ShopListItem(dbModel, productId));
+            // Because it's a set, this checks if it exists in db with business-key equals implementation
+            if (!added) log.debug("Product {} was already present in db for list '{}' for user '{}'.",
+                productId, shopList.getName(), shopList.getOwner());
         }
         dbModel.setItems(dbItems);
 
