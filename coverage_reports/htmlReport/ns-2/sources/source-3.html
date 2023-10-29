@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.app.domain.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopList (com.everis.hello.shoplist.app.domain.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopList</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.app.domain.model;
+&nbsp;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListFullException;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.ToString;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotEmpty;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import javax.validation.constraints.Size;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Getter
+<b class="fc">&nbsp;@ToString</b>
+&nbsp;@Validated
+&nbsp;public class ShopList {
+&nbsp;
+&nbsp;    public static final int MAX_ITEMS_PER_LIST = 25;
+&nbsp;
+<b class="fc">&nbsp;    private final String name;</b>
+<b class="fc">&nbsp;    private final String owner;</b>
+<b class="fc">&nbsp;    private final List&lt;Long&gt; items = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // Only for delayed construction purposes, should not be used in business logic.
+<b class="fc">&nbsp;    public ShopList(@NotNull String name, @NotNull String owner) {</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.owner = owner;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public ShopList(@NotNull String name, @NotNull String owner, @NotEmpty @Size(max = MAX_ITEMS_PER_LIST) List&lt;Long&gt; products) {</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.owner = owner;</b>
+<b class="fc">&nbsp;        this.items.addAll(products);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Empty shop lists must be deleted. */
+&nbsp;    public boolean needsDeletion() {
+<b class="fc">&nbsp;        return this.items.isEmpty();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isFull() {
+<b class="fc">&nbsp;        return this.items.size() &gt;= MAX_ITEMS_PER_LIST;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Long&gt; getItems() {
+&nbsp;        // Returns an unmodifiable copy of the array (does not copy the elements itself)
+<b class="fc">&nbsp;        return Collections.unmodifiableList(this.items);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getNumberOfItems() {
+<b class="fc">&nbsp;        return this.items.size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // You must call this from business logic.
+&nbsp;    public boolean addProduct(Long productId) throws ShopListFullException {
+<b class="fc">&nbsp;        if (this.isFull()) {</b>
+<b class="fc">&nbsp;            throw new ShopListFullException(this.getName());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return this.addProductNoConstraint(productId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // You should call this from database operations.
+&nbsp;    public boolean addProductNoConstraint(Long productId) {
+<b class="fc">&nbsp;        boolean added = false;</b>
+<b class="fc">&nbsp;        if (!this.items.contains(productId)) {</b>
+<b class="fc">&nbsp;            this.items.add(productId);</b>
+<b class="fc">&nbsp;            added = true;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return added;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int removeProduct(Long productId) {
+<b class="fc">&nbsp;        this.items.remove(productId);</b>
+<b class="fc">&nbsp;        return this.items.size();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

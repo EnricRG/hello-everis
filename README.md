@@ -1,53 +1,116 @@
-# Getting Started
+<!-- TOC -->
+* [Introducción](#introducción)
+* [Compilar y iniciar aplicación](#compilar-y-iniciar-aplicación)
+* [Tests y cobertura de código](#tests-y-cobertura-de-código)
+* [Decisiones de diseño e implementación](#decisiones-de-diseño-e-implementación)
+  * [Listas únicas por usuario](#listas-únicas-por-usuario)
+  * [Productos sin cantidad, solo la tipologia](#productos-sin-cantidad-solo-la-tipologia)
+  * [Empaquetado por dominio](#empaquetado-por-dominio)
+  * [No usamos librerías de mapping entre objetos.](#no-usamos-librerías-de-mapping-entre-objetos)
+  * [Núcleo de negocio aislado con excepciones (hexagonal)](#núcleo-de-negocio-aislado-con-excepciones-hexagonal)
+<!-- TOC -->
 
-### Prerequisitos
+# Introducción
 
-#### Necesario
+Este proyecto forma parte del proceso de selección de NTT Data Spain (conocida anteriormente como Everis). Consiste
+en desarrollar un microservicio REST para gestion de listas de compra aplazada (listas "Para comprar más tarde").
 
-* JDK 11 Disponible [aquí](https://adoptopenjdk.net/)
-* Maven Disponible [aquí](https://maven.apache.org/)
+Para más información se recomienda visitar el archivo [README.md original](./README_original.md).
 
-#### Opcional
+# Compilar y iniciar aplicación
 
-* Docker desktop Disponible [aquí](https://www.docker.com/products/docker-desktop)
+El archivo [README.md original](./README_original.md) contiene la información necesaria para desarrollar, compilar y 
+ejecutar la aplicación. Complementándolo, estas son las propiedades que deben definirse para que la aplicación inicie:
 
-### Guía
-#### Contenido
+| Propiedad               | Descripción                                                                                | Valor por defecto   |
+|-------------------------|--------------------------------------------------------------------------------------------|---------------------|
+| **everis.products.url** | URL base al servicio de información de productos. Formato _schema://host:port_             |                     |
+| everis.products.timeout | Tiempo de espera en milisegundos de las peticiones al servicio de información de productos | 30000 (30 segundos) |
 
-* Spring-boot app
-	- Expone un servicio REST de ejemplo 
-* WireMock mock server
-	- Expone la API definida en src/main/resources/productsApi.yml
-* Sonar instance (para poder levantar sonar es necesario docker)
-	- localhost:9000
-	- admin/admin
+Las propiedades obligatorias se resaltan en **oscuro**.
 
-#### Uso
+Encontraréis ejemplos de archivos de configuración en los directorios de recursos [main/resources](./src/main/resources) 
+y [test/resources](./src/test/resources).
 
-* Arranque de la aplicación: mvn spring-boot:run
-* Análisis de código (necesario docker): 
-   1. Levantar instancia de sonar: mvn docker-compose:up
-   2. Análisis de código: mvn clean verify sonar:sonar
-   
-### Objetivo
+# Tests y cobertura de código
 
-Se desea implentar un servicio que permita a los usuarios guardar productos en una lista para comprar más tarde. Esta lista se quiere identificar mediante un nombre único que no podrá ser repetido, además se quiere limitar el número de listas por usuarios a 5. Estas listas no podrán superar más de 25 artículos. A la hora de crear una lista es necesario que se le pase el nombre y que contenga al menos un producto. Si una lista se queda sin productos hay que eliminarla.
-Actualmente, ya existe una api que nos devuelve el detalle de los articulos, a continuación se detallan las operaciones y datos que nos puede devolver esta API:
+Podrás encontrar un reporte de cobertura de código aquí: [Report](https://enricrg.github.io/hello-everis/coverage_reports/htmlReport/index.html)
 
-* Se expone en localhost:8081
-* La definición de la api viene dada por el fichero productsApi.yml que contiene el proyecto
-* Devuele el detalle para un total de 15 productos identificados por un id comprendido entre 1 y 15
-* Si se le pasa un identificador mayor a 16 devolverá un 404
+Algunos métodos autogenerados de ciertos objetos como toString o constructor vacío no han quedado cubiertos por los 
+tests, pero es necesario que estén. El objetivo ha sido cubrir casi el 100% del código de negocio, y el reporte lo 
+valida.
 
-Al existir un servicio que ya contiene el detalle de productos nuestro servicio únicamente deberá de guardar los identificadores de articulos y a la hora de devolver el detalle de una lista deberá de hacer uso de la API de productos. En caso de no encontrar un producto en la API no se deberá de devolver en la respuesta de la lista y habrá que eliminarlo de esta. 
+# Decisiones de diseño e implementación
 
-Las operaciones que se quieren implementar son las siguientes:
+## Listas únicas por usuario
 
-* Crear una lista para un usuario
-* Añadir un producto a una lista 
-* Eliminar una lista de un usuario
-* Eliminar un producto de la lista
-* Devolver el detalle de una lista por id
-* Devolver todas las listas de un usuario
+Ante la ambigüedad en los requerimientos descritos en README.md sobre la unicidad de las listas, he decidido que para
+este ejemplo las listas sean únicas por usuario (lo llamaremos ```owner```) y nombre de lista.
 
+## Productos sin cantidad, solo la tipologia
 
+Parecería razonable que las listas dispusieran tanto de artículos como la cantidad de ese artículo para comprar más 
+tarde. Sin embargo, como los requerimientos no lo exigen, para simplificar la implementación he decidido no disponer
+de esas cantidades, y las listas solo contienen identificadores de artículo no repetidos. En términos conocidos, serían
+más parecidas a una lista de favoritos o de deseos.
+
+## Empaquetado por dominio
+
+He decidido usar el empaquetado por dominio habitual de DDD. Debido a la simplicidad de algunos dominios, he omitido el 
+uso del empaquetado típico en arquitectura hexagonal. Aunque su tamaño podria no ser suficiente para justificar el uso
+de esta estructura de paquetes, he decidido usar una estructura que marca las características de un diseño hexagonal en 
+el paquete ```com.everis.hello.shoplist``` para mostrar un ejemplo. Este tendrá una forma similar a:
+```
+...
+com.everis.hello.shoplist
+├── app
+│   ├── domain
+│   │ 	├── model
+│   │ 	├── exception
+│   │ 	├── service
+│   │ 	...
+│   ├── ports
+│   │ 	├── input
+│   │ 	├── output
+│   ...
+├── infrastructure
+│   ├── adapters
+│   │ 	├── input
+│   │ 	│   ├── rest
+│   │ 	│   ...
+│   │ 	├── output
+│   │ 	│   ├── persistence
+│   │ 	│   ...
+│   │ 	...
+│   ├── config
+│   ...
+...
+```
+Algunas clases se han simplificado, como por ejemplo puertos sobre una misma entidad con pocas operaciones se fusionan
+en una sola interfaz. En aplicaciones grandes, sería adecuado separar las distintas operativas en interfaces diferentes.
+
+## No usamos librerías de mapping entre objetos.
+
+Existen librerías como MapStruct que permiten mapear objetos de unos a otros. Como los objetos de este dominio son 
+extremadamente simples, se omite su uso. Recomiendo su uso en objetos de mayor tamaño, ya que reduce la cantidad de 
+código "boilerplate" de manera similar a como lo hace _Lombok_.
+
+## Núcleo de negocio aislado con excepciones (hexagonal)
+
+La arquitectura hexagonal tiene como uno de sus principales objetivos separar el núcleo de negocio (el hexágono central)
+de los detalles de infraestructura de sus adaptadores. Aunque en el ideal solo tendríamos código de negocio própio
+o del lenguaje en este núcleo, trabajamos con Java y JavaEE/JakartaEE que nos proporciona unas librerías de negocio
+altamente funcionales y testeadas. 
+
+En esta aplicación, permitiremos anotaciones de JakartaEE en el núcleo de negocio (como ```@Transactional```). Esto nos 
+permite definir funcionalmente que nuestra operativa se debe ejecutar de forma transaccional y transmitir de forma
+transparente la gestión de la transacción a la capa de persistencia.
+
+Otra excepción es la anotación ```@ResponseStatus``` de Spring. La usaremos en las excepciones para simplificar el mapeo de 
+HTTP Status codes en función de la excepción. En mi puesto actual elaboré un diseño en el que todas nuestras excepciones
+de negocio parten de una excepción própia AppException que tiene un campo de tipo ```enum``` que describe funcionalmente
+el tipo de error, sin detalles de implementación (```input_validation_err, business_err, not_found_err, communication_err```).
+Luego, cada aplicación tiene una anotación que incluye un @ControllerAdvice que lee las excepciones que le llegan, y 
+si se trata de una AppException mapea el campo al status code pertinente. Actualmente, este diseño se encuentra en 
+producción en la mayoría de nuestros microservicios. He omitido un diseño similar en esta aplicación para simplificar 
+la implementación, pero considero que sería una mejor solución al uso de la anotación ```@ResponseStatus```.

@@ -1,0 +1,97 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ProductDetailProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.app.ports.output</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductDetailProvider (com.everis.hello.shoplist.app.ports.output)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ProductDetailProvider</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.app.ports.output;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ProductDetail;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Provider of shopping products&#39; details given its IDs.
+&nbsp; *
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;public interface ProductDetailProvider {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the details of the products identified by the given IDs. If some products don&#39;t exist in the backing
+&nbsp;     * service, it may cause the result of this call to be smaller than the provided ID list. Implementations must not
+&nbsp;     * fail when a product is not found or cannot be retrieved for some reason. Also, implementations must not return
+&nbsp;     * details of any product that is not included in the ID list.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * So, in other words, the result must be less or equal in length and must not include details for products not
+&nbsp;     * included in the ID list.
+&nbsp;     *
+&nbsp;     * @param ids IDs of products to fetch details of.
+&nbsp;     *
+&nbsp;     * @return A list of product details. Never null.
+&nbsp;     */
+&nbsp;    List&lt;ProductDetail&gt; getDetails(@NotNull List&lt;Long&gt; ids);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>
