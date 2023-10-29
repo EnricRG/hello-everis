@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListController (com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopListController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (39/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.input.rest.controller;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.app.exception.*;
+&nbsp;import com.everis.hello.shoplist.app.ports.input.*;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper.ShopListRestMapper;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.DetailedShopListView;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListForm;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import javax.validation.Valid;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/user/{owner}/lists&quot;)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class ShopListController {
+&nbsp;
+&nbsp;    private final ShopListRestMapper shopListMapper;
+&nbsp;
+&nbsp;    private final CreateShopListUsecase createUsecase;
+&nbsp;    private final AddProductUsecase addProductUsecase;
+&nbsp;    private final DeleteShopListUsecase deleteUsecase;
+&nbsp;    private final RemoveProductUsecase removeProductUsecase;
+&nbsp;    private final UserListsUsecase userListsUsecase;
+&nbsp;    private final ShopListDetailsUsecase detailsUsecase;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public ShopListController(ShopListRestMapper shopListMapper,
+&nbsp;                              CreateShopListUsecase createUsecase,
+&nbsp;                              AddProductUsecase addProductUsecase,
+&nbsp;                              DeleteShopListUsecase deleteUsecase,
+&nbsp;                              RemoveProductUsecase removeProductUsecase,
+&nbsp;                              UserListsUsecase userListsUsecase,
+<b class="fc">&nbsp;                              ShopListDetailsUsecase detailsUsecase) {</b>
+<b class="fc">&nbsp;        this.shopListMapper = shopListMapper;</b>
+<b class="fc">&nbsp;        this.createUsecase = createUsecase;</b>
+<b class="fc">&nbsp;        this.addProductUsecase = addProductUsecase;</b>
+<b class="fc">&nbsp;        this.deleteUsecase = deleteUsecase;</b>
+<b class="fc">&nbsp;        this.removeProductUsecase = removeProductUsecase;</b>
+<b class="fc">&nbsp;        this.userListsUsecase = userListsUsecase;</b>
+<b class="fc">&nbsp;        this.detailsUsecase = detailsUsecase;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(value = &quot;/{listName}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;ShopListSimpleView&gt; createShopList(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner,
+&nbsp;        @PathVariable(&quot;listName&quot;) String listName,
+&nbsp;        @RequestBody @Valid ShopListForm form
+&nbsp;    ) throws ShopListAlreadyExistsException, MaxShopListsPerUserException, CannotCreateShopListException, ShopListEmptyException
+&nbsp;    {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on createShopList. Owner: &#39;{}&#39;, listName: &#39;{}&#39;, form: {}&quot;, owner, listName, form);</b>
+<b class="fc">&nbsp;        ShopList shopList = this.createUsecase.createShopList(owner, listName, form.getProducts());</b>
+<b class="fc">&nbsp;        ShopListSimpleView view = this.shopListMapper.toSimpleView(shopList);</b>
+<b class="fc">&nbsp;        log.debug(&quot;createShopList result view: {}&quot;, view);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(view);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(value = &quot;/{listName}/products/{productId}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;String&gt; addProductToList(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner,
+&nbsp;        @PathVariable(&quot;listName&quot;) String listName,
+&nbsp;        @PathVariable(&quot;productId&quot;) Long productId
+&nbsp;    ) throws ShopListFullException, ShopListNotFoundException
+&nbsp;    {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on addProductToList. Owner: &#39;{}&#39;, listName: &#39;{}&#39;, productId: {}&quot;, owner, listName, productId);</b>
+<b class="fc">&nbsp;        boolean productAdded = this.addProductUsecase.addProduct(owner, listName, productId);</b>
+<b class="fc">&nbsp;        String result = productAdded ?</b>
+<b class="fc">&nbsp;            &quot;Product added successfully to list.&quot; :</b>
+<b class="fc">&nbsp;            &quot;Product was already in the list.&quot;;</b>
+<b class="fc">&nbsp;        log.debug(&quot;addProductToList result view: {}&quot;, result);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().body(result);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(value = &quot;/{listName}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;Object&gt; deleteShopList(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner,
+&nbsp;        @PathVariable(&quot;listName&quot;) String listName
+&nbsp;    ) throws ShopListNotFoundException {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on deleteShopList. Owner: &#39;{}&#39;, listName: &#39;{}&#39;&quot;, owner, listName);</b>
+<b class="fc">&nbsp;        this.deleteUsecase.deleteList(owner, listName);</b>
+<b class="fc">&nbsp;        log.debug(&quot;addProductToList successfully ran.&quot;);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(value = &quot;/{listName}/products/{productId}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;Integer&gt; removeProductFromList(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner,
+&nbsp;        @PathVariable(&quot;listName&quot;) String listName,
+&nbsp;        @PathVariable(&quot;productId&quot;) Long productId
+&nbsp;    ) throws ShopListNotFoundException
+&nbsp;    {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on removeProductFromList. Owner: &#39;{}&#39;, listName: &#39;{}&#39;, productId: {}&quot;, owner, listName, productId);</b>
+<b class="fc">&nbsp;        int listSize = this.removeProductUsecase.removeProduct(owner, listName, productId);</b>
+<b class="fc">&nbsp;        log.debug(&quot;removeProductFromList items remaining: {}&quot;, listSize);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().body(listSize);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;List&lt;ShopListSimpleView&gt;&gt; getUserLists(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner
+&nbsp;    ) {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on getUserLists. Owner: &#39;{}&#39;.&quot;, owner);</b>
+<b class="fc">&nbsp;        List&lt;ShopList&gt; shopLists = this.userListsUsecase.getListsForUser(owner);</b>
+<b class="fc">&nbsp;        List&lt;ShopListSimpleView&gt; view = this.shopListMapper.toSimpleView(shopLists);</b>
+<b class="fc">&nbsp;        log.debug(&quot;removeProductFromList shop lists for user &#39;{}&#39;: {}&quot;, owner, view);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().body(view);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(value = &quot;/{listName}/details&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+&nbsp;    public ResponseEntity&lt;DetailedShopListView&gt; getListDetails(
+&nbsp;        @PathVariable(&quot;owner&quot;) String owner,
+&nbsp;        @PathVariable(&quot;listName&quot;) String listName
+&nbsp;    ) throws ShopListNotFoundException {
+<b class="fc">&nbsp;        log.debug(&quot;Request received on getListDetails. Owner: &#39;{}&#39;, list name: {}.&quot;, owner, listName);</b>
+<b class="fc">&nbsp;        DetailedShopList shopListDetail = this.detailsUsecase.getDetails(owner, listName);</b>
+<b class="fc">&nbsp;        DetailedShopListView view = this.shopListMapper.toDetailedView(shopListDetail);</b>
+<b class="fc">&nbsp;        log.debug(&quot;getListDetails shop list details for list &#39;{}&#39; owned by user &#39;{}&#39;: {}&quot;, listName, owner, view);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().body(view);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

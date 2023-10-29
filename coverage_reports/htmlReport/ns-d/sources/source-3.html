@@ -1,0 +1,95 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > RemoveProductUsecase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.app.ports.input</a>
+</div>
+
+<h1>Coverage Summary for Class: RemoveProductUsecase (com.everis.hello.shoplist.app.ports.input)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">RemoveProductUsecase</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.app.ports.input;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;public interface RemoveProductUsecase {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a given product from the list owned by user, returning the size of the updated list. Throws a
+&nbsp;     * {@link ShopListNotFoundException} if the list does not exist. If the list becomes empty because of this operation,
+&nbsp;     * it gets deleted. This is indicated by a return value of 0.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * If this method ends successfully it can be assumed that the list no longer contains the product. The method must
+&nbsp;     * not fail if the list does not contain the product, and it should return as usual. This can be identified by
+&nbsp;     * checking the size of the list before and after this operation.
+&nbsp;     *
+&nbsp;     * @param owner Owner of the list.
+&nbsp;     * @param listName List name. Must exist a list with this name for the given user.
+&nbsp;     * @param productId Product ID. Assumed to be valid.
+&nbsp;     *
+&nbsp;     * @return The current number of products that the updated list contains after the execution.
+&nbsp;     * @throws ShopListNotFoundException If the list does not exist.
+&nbsp;     */
+&nbsp;    int removeProduct(String owner, String listName, Long productId) throws ShopListNotFoundException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

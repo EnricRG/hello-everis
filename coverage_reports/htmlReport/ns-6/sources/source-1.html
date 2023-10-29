@@ -1,0 +1,132 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ProductRestMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductRestMapper (com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductRestMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ProductDetail;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ProductDetailView;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;public class ProductRestMapper {</b>
+&nbsp;
+&nbsp;    public List&lt;ProductDetailView&gt; toDetailView(@NotNull List&lt;ProductDetail&gt; products) {
+<b class="fc">&nbsp;        List&lt;ProductDetailView&gt; views = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (ProductDetail p : products) {</b>
+<b class="fc">&nbsp;            views.add(this.toDetailView(p));</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return views;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ProductDetailView toDetailView(@NotNull ProductDetail p) {
+<b class="fc">&nbsp;        return new ProductDetailView(p.getId(), p.getName(), p.getSize(), p.getPrice(), p.getColor());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListSpringRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListSpringRepository (com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopListSpringRepository</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,6%
+  </span>
+  <span class="absValue">
+    (41/42)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShopListSpringRepository$$EnhancerBySpringCGLIB$$71ff6930</td>
+  </tr>
+  <tr>
+    <td class="name">ShopListSpringRepository$$EnhancerBySpringCGLIB$$71ff6930$$FastClassBySpringCGLIB$$99eecfcd</td>
+  </tr>
+  <tr>
+    <td class="name">ShopListSpringRepository$$FastClassBySpringCGLIB$$1f8f9da6</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,6%
+  </span>
+  <span class="absValue">
+    (41/42)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.repository;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
+&nbsp;import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.mapper.ShopListJpaMapper;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa.ShopListJpaRepository;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Repository
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class ShopListSpringRepository implements ShopListRepository {
+&nbsp;
+<b class="fc">&nbsp;    private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, &quot;id&quot;);</b>
+&nbsp;
+&nbsp;    private final ShopListJpaRepository repo;
+&nbsp;    private final ShopListJpaMapper mapper;
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public ShopListSpringRepository(ShopListJpaRepository repo, ShopListJpaMapper mapper) {</b>
+<b class="fc">&nbsp;        this.repo = repo;</b>
+<b class="fc">&nbsp;        this.mapper = mapper;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean listExists(String owner, String listName) {
+<b class="fc">&nbsp;        log.debug(&quot;Checking if list &#39;{}&#39; exists for user &#39;{}&#39;&quot;, listName, owner);</b>
+&nbsp;
+&nbsp;        // Can be optimized: query to retrieve only the existence of the element without fetching its fields.
+<b class="fc">&nbsp;        return this.repo.findByOwnerAndListName(owner, listName).isPresent();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public ShopList getShopList(String owner, String listName) throws ShopListNotFoundException {
+<b class="fc">&nbsp;        log.debug(&quot;Retrieving shop list with name &#39;{}&#39; for user &#39;{}&#39;&quot;, listName, owner);</b>
+&nbsp;
+<b class="fc">&nbsp;        ShopListEntity dbModel = this.repo.findByOwnerAndListName(owner, listName)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ShopListNotFoundException(owner, listName));</b>
+&nbsp;
+&nbsp;        // toFullString is expensive performance-wise, only evaluate it when truly needed.
+<b class="fc">&nbsp;        if (log.isDebugEnabled()) {</b>
+<b class="fc">&nbsp;            log.debug(&quot;Shop List retrieved from DB: {}&quot;, dbModel.toStringFull());</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return this.mapper.toDomain(dbModel);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;ShopList&gt; getShopLists(String owner) {
+<b class="fc">&nbsp;        log.debug(&quot;Retrieving shop lists for user &#39;{}&#39;&quot;, owner);</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;ShopListEntity&gt; dbModels = this.repo.findByOwner(owner, DEFAULT_SORT);</b>
+&nbsp;
+&nbsp;        // toFullString is expensive performance-wise, only evaluate it when truly needed.
+<b class="fc">&nbsp;        if (log.isDebugEnabled()) {</b>
+<b class="fc">&nbsp;            log.debug(&quot;Shop List retrieved from DB: {}&quot;, this.mapper.stringifyFull(dbModels));</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return this.mapper.toDomain(dbModels);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ShopList save(ShopList shopList) {
+<b class="fc">&nbsp;        String listName = shopList.getName();</b>
+<b class="fc">&nbsp;        String owner = shopList.getOwner();</b>
+&nbsp;
+&nbsp;        ShopListEntity list;
+<b class="fc">&nbsp;        Optional&lt;ShopListEntity&gt; lOpt = this.repo.findByOwnerAndListName(owner, listName);</b>
+<b class="fc">&nbsp;        if (lOpt.isPresent()) {</b>
+<b class="fc">&nbsp;            list = lOpt.get();</b>
+<b class="fc">&nbsp;            log.debug(&quot;Updating existing list with name &#39;{}&#39; for user &#39;{}&#39;&quot;, listName, owner);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            list = new ShopListEntity();</b>
+<b class="fc">&nbsp;            log.debug(&quot;Creating new shop list with name &#39;{}&#39; for user &#39;{}&#39;&quot;, listName, owner);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        ShopListEntity dbModel = this.mapper.toJpaModel(shopList, list);</b>
+<b class="fc">&nbsp;        dbModel = this.repo.save(dbModel);</b>
+&nbsp;
+&nbsp;        // toFullString is expensive performance-wise, only evaluate it when truly needed.
+<b class="fc">&nbsp;        if (log.isDebugEnabled()) {</b>
+<b class="fc">&nbsp;            log.debug(&quot;Shop List persisted to DB: {}&quot;, dbModel.toStringFull());</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return shopList; //Currently returning same instance, could change in the future.</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int userListQuantity(String owner) {
+<b class="fc">&nbsp;        log.debug(&quot;Checking how many lists does user &#39;{}&#39; own.&quot;, owner);</b>
+<b class="fc">&nbsp;        return this.repo.findByOwner(owner, DEFAULT_SORT).size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteList(String owner, String listName) {
+<b class="fc">&nbsp;        log.debug(&quot;Deleting list &#39;{}&#39; owned by &#39;{}&#39;.&quot;, listName, owner);</b>
+<b class="fc">&nbsp;        boolean deleted = false;</b>
+&nbsp;
+<b class="fc">&nbsp;        Optional&lt;ShopListEntity&gt; lOpt = this.repo.findByOwnerAndListName(owner, listName);</b>
+<b class="fc">&nbsp;        if (lOpt.isPresent()) {</b>
+<b class="fc">&nbsp;            this.repo.delete(lOpt.get());</b>
+<b class="fc">&nbsp;            log.info(&quot;List &#39;{}&#39; owned by &#39;{}&#39; successfully deleted from the repository.&quot;, listName, owner);</b>
+<b class="fc">&nbsp;            deleted = true;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            log.warn(&quot;Called deletion on list &#39;{}&#39; owned by user &#39;{}&#39; that does not exist in the repository!&quot;,</b>
+&nbsp;                listName, owner);
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return deleted;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

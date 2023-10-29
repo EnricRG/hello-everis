@@ -1,0 +1,182 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListJpaMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.output.persistence.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListJpaMapper (com.everis.hello.shoplist.infrastructure.adapters.output.persistence.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopListJpaMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93,3%
+  </span>
+  <span class="absValue">
+    (28/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.mapper;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListItem;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;@Slf4j</b>
+<b class="fc">&nbsp;public class ShopListJpaMapper {</b>
+&nbsp;    public ShopList toDomain(ShopListEntity dbModel) {
+<b class="fc">&nbsp;        ShopList domain = new ShopList(dbModel.getName(), dbModel.getOwner());</b>
+&nbsp;
+<b class="fc">&nbsp;        for (ShopListItem dbItem : dbModel.getItems()) {</b>
+<b class="fc">&nbsp;            domain.addProductNoConstraint(dbItem.getProductId());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        if (domain.getNumberOfItems() &gt; ShopList.MAX_ITEMS_PER_LIST) {</b>
+<b class="nc">&nbsp;            log.warn(&quot;Persistence provided more elements than the max allowed for the application for list &#39;{}&#39; &quot; +</b>
+<b class="nc">&nbsp;                &quot;owned by user &#39;{}&#39;!&quot;, domain.getName(), domain.getOwner());</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return domain;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ShopList&gt; toDomain(@NotNull List&lt;ShopListEntity&gt; dbModels) {
+<b class="fc">&nbsp;        List&lt;ShopList&gt; lists = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (ShopListEntity dbModel : dbModels) {</b>
+<b class="fc">&nbsp;            lists.add(this.toDomain(dbModel));</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return lists;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Updates the given {@link ShopListEntity} instance to match the provided {@link ShopList} domain object. */
+&nbsp;    public ShopListEntity toJpaModel(@NotNull ShopList shopList, @NotNull ShopListEntity dbModel) {
+<b class="fc">&nbsp;        dbModel.setOwner(shopList.getOwner());</b>
+<b class="fc">&nbsp;        dbModel.setName(shopList.getName());</b>
+&nbsp;
+<b class="fc">&nbsp;        this.synchronizeItems(shopList, dbModel);</b>
+&nbsp;
+<b class="fc">&nbsp;        return dbModel;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // This method takes advantage of the fact that both ShopListEntity and ShopListItem entities have redefined their
+&nbsp;    // equals() and hashCode() implementations to match business key uniqueness. This allows for an elegant implementation
+&nbsp;    // of this Set operations.
+&nbsp;    private void synchronizeItems(ShopList shopList, ShopListEntity dbModel) {
+&nbsp;        //This set contains all domain products mapped to its JPA object
+<b class="fc">&nbsp;        Set&lt;ShopListItem&gt; mappedJpaItems = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Long productId : shopList.getItems()) {</b>
+<b class="fc">&nbsp;            mappedJpaItems.add(new ShopListItem(dbModel, productId));</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        Set&lt;ShopListItem&gt; dbItems = dbModel.getItems() == null ? new HashSet&lt;&gt;() : dbModel.getItems();</b>
+<b class="fc">&nbsp;        dbItems.retainAll(mappedJpaItems); // Drop those items that are not present in the domain object.</b>
+&nbsp;
+<b class="fc">&nbsp;        dbItems.addAll(mappedJpaItems); // Add the remaining elements that were not present in the db.</b>
+&nbsp;
+<b class="fc">&nbsp;        dbModel.setItems(dbItems);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String stringifyFull(@NotNull List&lt;ShopListEntity&gt; dbModels) {
+<b class="fc">&nbsp;        return dbModels.stream()</b>
+<b class="fc">&nbsp;            .map(ShopListEntity::toStringFull)</b>
+<b class="fc">&nbsp;            .collect(Collectors.joining(&quot;, &quot;, &quot;List&lt;ShopListEntity&gt;[&quot;, &quot;]&quot;));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

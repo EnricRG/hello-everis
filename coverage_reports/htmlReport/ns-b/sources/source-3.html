@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ProductServiceRestConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.output.product</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductServiceRestConfig (com.everis.hello.shoplist.infrastructure.adapters.output.product)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductServiceRestConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProductServiceRestConfig$$EnhancerBySpringCGLIB$$1b23de60</td>
+  </tr>
+  <tr>
+    <td class="name">ProductServiceRestConfig$$EnhancerBySpringCGLIB$$1b23de60$$FastClassBySpringCGLIB$$d8fc6862</td>
+  </tr>
+  <tr>
+    <td class="name">ProductServiceRestConfig$$FastClassBySpringCGLIB$$e820c6a4</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.output.product;
+&nbsp;
+&nbsp;import org.apache.http.client.config.RequestConfig;
+&nbsp;import org.apache.http.impl.client.CloseableHttpClient;
+&nbsp;import org.apache.http.impl.client.HttpClientBuilder;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.http.client.ClientHttpRequestFactory;
+&nbsp;import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+&nbsp;import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;import org.springframework.web.util.DefaultUriBuilderFactory;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotEmpty;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Configuration
+<b class="fc">&nbsp;public class ProductServiceRestConfig {</b>
+&nbsp;
+&nbsp;    public static final String REST_TEMPLATE_BEAN = &quot;ProductRestTemplate&quot;;
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Value(&quot;${everis.products.url}&quot;)
+&nbsp;    private String serviceUrl; //Base service URL (scheme://host:port)
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Value(&quot;${everis.products.timeout:30000}&quot;)
+&nbsp;    private Integer timeout; // Timeout in milliseconds.
+&nbsp;
+&nbsp;    // Source: https://www.baeldung.com/rest-template
+&nbsp;    @Bean(REST_TEMPLATE_BEAN)
+&nbsp;    public RestTemplate getRestTemplate() {
+<b class="fc">&nbsp;        RestTemplate template = new RestTemplate(getClientHttpRequestFactory());</b>
+&nbsp;
+<b class="fc">&nbsp;        template.setUriTemplateHandler(new DefaultUriBuilderFactory(serviceUrl));</b>
+&nbsp;
+&nbsp;        // Circumvent the fact that the product service returns application/octet-stream instead of application/json
+<b class="fc">&nbsp;        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();</b>
+<b class="fc">&nbsp;        converter.setSupportedMediaTypes(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));</b>
+<b class="fc">&nbsp;        template.setMessageConverters(List.of(converter));</b>
+&nbsp;
+<b class="fc">&nbsp;        return template;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+<b class="fc">&nbsp;        RequestConfig config = RequestConfig.custom()</b>
+<b class="fc">&nbsp;            .setConnectTimeout(timeout)</b>
+<b class="fc">&nbsp;            .setConnectionRequestTimeout(timeout)</b>
+<b class="fc">&nbsp;            .setSocketTimeout(timeout)</b>
+<b class="fc">&nbsp;            .build();</b>
+&nbsp;
+&nbsp;        CloseableHttpClient client = HttpClientBuilder
+<b class="fc">&nbsp;            .create()</b>
+<b class="fc">&nbsp;            .setDefaultRequestConfig(config)</b>
+<b class="fc">&nbsp;            .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        return new HttpComponentsClientHttpRequestFactory(client);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

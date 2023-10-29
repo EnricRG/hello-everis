@@ -1,0 +1,94 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AddProductUsecase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.app.ports.input</a>
+</div>
+
+<h1>Coverage Summary for Class: AddProductUsecase (com.everis.hello.shoplist.app.ports.input)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">AddProductUsecase</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.app.ports.input;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListFullException;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;public interface AddProductUsecase {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a product to an existing {@link ShopList}.
+&nbsp;     *
+&nbsp;     * @param owner Owner of the list.
+&nbsp;     * @param listName List name. Must exist a list with this name for the given user.
+&nbsp;     * @param productId Product ID. Assumed to be valid.
+&nbsp;     *
+&nbsp;     * @return Whether the product was added to the list ({@code true}) or it was already present in it {@code false}.
+&nbsp;     *         In other words: returns whether the list increased in size after this operation or not.
+&nbsp;     *
+&nbsp;     * @throws ShopListNotFoundException If the list does not exist.
+&nbsp;     * @throws ShopListFullException If the list has reached the max number of elements allowed.
+&nbsp;     */
+&nbsp;    boolean addProduct(String owner, String listName, Long productId) throws ShopListNotFoundException, ShopListFullException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>
