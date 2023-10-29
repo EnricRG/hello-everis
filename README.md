@@ -1,6 +1,6 @@
 <!-- TOC -->
 * [Introducción](#introducción)
-* [Compilar y iniciar aplicación](#compilar-y-iniciar-aplicación)
+* [Compilar e iniciar aplicación](#compilar-e-iniciar-aplicación)
 * [Tests y cobertura de código](#tests-y-cobertura-de-código)
 * [Decisiones de diseño e implementación](#decisiones-de-diseño-e-implementación)
   * [Listas únicas por usuario](#listas-únicas-por-usuario)
@@ -17,7 +17,7 @@ en desarrollar un microservicio REST para gestion de listas de compra aplazada (
 
 Para más información se recomienda visitar el archivo [README.md original](./README_original.md).
 
-# Compilar y iniciar aplicación
+# Compilar e iniciar aplicación
 
 El archivo [README.md original](./README_original.md) contiene la información necesaria para desarrollar, compilar y 
 ejecutar la aplicación. Complementándolo, estas son las propiedades que deben definirse para que la aplicación inicie:
