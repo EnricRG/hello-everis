@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListDetailsService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.app.domain.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListDetailsService (com.everis.hello.shoplist.app.domain.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopListDetailsService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (31/31)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShopListDetailsService$$EnhancerBySpringCGLIB$$310e92d3</td>
+  </tr>
+  <tr>
+    <td class="name">ShopListDetailsService$$EnhancerBySpringCGLIB$$310e92d3$$FastClassBySpringCGLIB$$cad267c</td>
+  </tr>
+  <tr>
+    <td class="name">ShopListDetailsService$$FastClassBySpringCGLIB$$9fcbd578</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (31/31)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.app.domain.service;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ProductDetail;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.app.exception.ShopListNotFoundException;
+&nbsp;import com.everis.hello.shoplist.app.ports.input.ShopListDetailsUsecase;
+&nbsp;import com.everis.hello.shoplist.app.ports.output.ProductDetailProvider;
+&nbsp;import com.everis.hello.shoplist.app.ports.output.ShopListRepository;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Validated
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class ShopListDetailsService implements ShopListDetailsUsecase {
+&nbsp;
+&nbsp;    private final ShopListRepository repo;
+&nbsp;    private final ProductDetailProvider productDetailProvider;
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public ShopListDetailsService(ShopListRepository repo, ProductDetailProvider productDetailProvider) {</b>
+<b class="fc">&nbsp;        this.repo = repo;</b>
+<b class="fc">&nbsp;        this.productDetailProvider = productDetailProvider;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public DetailedShopList getDetails(String owner, String listName) throws ShopListNotFoundException {
+<b class="fc">&nbsp;        log.trace(&quot;Retrieving details from list &#39;{}&#39; owned by user &#39;{}&#39;...&quot;, listName, owner);</b>
+&nbsp;
+<b class="fc">&nbsp;        ShopList shopList = this.repo.getShopList(owner, listName);</b>
+<b class="fc">&nbsp;        log.debug(&quot;ShopList found: {}&quot;, shopList);</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;ProductDetail&gt; productDetails = this.productDetailProvider.getDetails(shopList.getItems());</b>
+<b class="fc">&nbsp;        if (productDetails.size() &lt; shopList.getItems().size()) {</b>
+<b class="fc">&nbsp;            log.info(&quot;Shop list &#39;{}&#39; owned by user &#39;{}&#39; contains products that are not present in the product service. &quot; +</b>
+&nbsp;                &quot;Those products will be removed.&quot;, listName, owner);
+<b class="fc">&nbsp;            this.removeUnknownProducts(shopList, productDetails);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        DetailedShopList details = this.createDetailedShopList(shopList, productDetails);</b>
+<b class="fc">&nbsp;        log.info(&quot;Details successfully fetched for list &#39;{}&#39; owned by user &#39;{}&#39;.&quot;, listName, owner);</b>
+<b class="fc">&nbsp;        log.debug(&quot;Detailed Shop List: {}&quot;, details);</b>
+&nbsp;
+<b class="fc">&nbsp;        return details;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void removeUnknownProducts(ShopList shopList, List&lt;ProductDetail&gt; productDetails) {
+<b class="fc">&nbsp;        String owner = shopList.getOwner();</b>
+<b class="fc">&nbsp;        String listName = shopList.getName();</b>
+<b class="fc">&nbsp;        log.debug(&quot;Removing products on list &#39;{}&#39; owned by user &#39;{}&#39; that are not present in the product service...&quot;,</b>
+&nbsp;            listName, owner);
+&nbsp;
+<b class="fc">&nbsp;        Set&lt;Long&gt; itemsToRemove = new HashSet&lt;&gt;(shopList.getItems());</b>
+<b class="fc">&nbsp;        Set&lt;Long&gt; detailItems = productDetails.stream()</b>
+<b class="fc">&nbsp;            .map(ProductDetail::getId)</b>
+<b class="fc">&nbsp;            .collect(Collectors.toSet());</b>
+&nbsp;
+<b class="fc">&nbsp;        itemsToRemove.removeAll(detailItems);</b>
+&nbsp;
+<b class="fc">&nbsp;        for (Long productId : itemsToRemove) {</b>
+<b class="fc">&nbsp;            shopList.removeProduct(productId);</b>
+<b class="fc">&nbsp;            log.debug(&quot;Product &#39;{}&#39; removed from list &#39;{}&#39; owned by user &#39;{}&#39;.&quot;, productId, listName, owner);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        log.info(&quot;{} products have been removed from list &#39;{}&#39; owned by user &#39;{}&#39;.&quot;, itemsToRemove.size(), listName, owner);</b>
+&nbsp;
+<b class="fc">&nbsp;        shopList = this.repo.save(shopList);</b>
+<b class="fc">&nbsp;        log.debug(&quot;Shop List after unknown product removal: {}&quot;, shopList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private DetailedShopList createDetailedShopList(ShopList shopList, List&lt;ProductDetail&gt; productDetails) {
+<b class="fc">&nbsp;        return new DetailedShopList(shopList.getOwner(), shopList.getName(), productDetails);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

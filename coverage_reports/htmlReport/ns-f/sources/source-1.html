@@ -1,0 +1,95 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListJpaRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListJpaRepository (com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ShopListJpaRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.output.persistence.spring.jpa;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.output.persistence.jpa.ShopListEntity;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;public interface ShopListJpaRepository extends JpaRepository&lt;ShopListEntity, Long&gt; {
+&nbsp;
+&nbsp;    @Query(&quot;SELECT l FROM ShopListEntity l &quot; +
+&nbsp;        &quot;WHERE l.owner = :owner AND l.name = :listName&quot;)
+&nbsp;    Optional&lt;ShopListEntity&gt; findByOwnerAndListName(
+&nbsp;        @Param(&quot;owner&quot;) @NotNull String owner,
+&nbsp;        @Param(&quot;listName&quot;) @NotNull String listName
+&nbsp;    );
+&nbsp;
+&nbsp;    @Query(&quot;SELECT l FROM ShopListEntity l WHERE l.owner = :owner&quot;)
+&nbsp;    List&lt;ShopListEntity&gt; findByOwner(@Param(&quot;owner&quot;) String owner, Sort sort);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>

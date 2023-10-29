@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ShopListRestMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ShopListRestMapper (com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShopListRestMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.everis.hello.shoplist.infrastructure.adapters.input.rest.mapper;
+&nbsp;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.DetailedShopList;
+&nbsp;import com.everis.hello.shoplist.app.domain.model.ShopList;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.DetailedShopListView;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ProductDetailView;
+&nbsp;import com.everis.hello.shoplist.infrastructure.adapters.input.rest.model.ShopListSimpleView;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import javax.validation.constraints.NotNull;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mapping class for {@link ShopList}-related rest input ports.
+&nbsp; *
+&nbsp; * @author EnricRG
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class ShopListRestMapper {
+&nbsp;
+&nbsp;    private final ProductRestMapper productMapper;
+&nbsp;
+&nbsp;    public ShopListSimpleView toSimpleView(@NotNull ShopList shopList) {
+<b class="fc">&nbsp;        return new ShopListSimpleView(shopList.getName(), shopList.getItems().size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ShopListSimpleView&gt; toSimpleView(@NotNull List&lt;ShopList&gt; shopLists) {
+<b class="fc">&nbsp;        List&lt;ShopListSimpleView&gt; view = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (ShopList s : shopLists) {</b>
+<b class="fc">&nbsp;            view.add(this.toSimpleView(s));</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return view;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public DetailedShopListView toDetailedView(@NotNull DetailedShopList shopListDetail) {
+<b class="fc">&nbsp;        List&lt;ProductDetailView&gt; productViews = this.productMapper.toDetailView(shopListDetail.getProducts());</b>
+<b class="fc">&nbsp;        return new DetailedShopListView(shopListDetail.getOwner(), shopListDetail.getName(), productViews);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-29 08:55</div>
+</div>
+</body>
+</html>
